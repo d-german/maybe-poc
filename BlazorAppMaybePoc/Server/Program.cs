@@ -11,6 +11,10 @@ public static class Program
         // to register your DbContext
         builder.Services.AddDbContext<ApplicationDbContext>();
 
+        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
+
         // Add services to the container.
 
         builder.Services.AddControllersWithViews();
@@ -22,6 +26,8 @@ public static class Program
         if (app.Environment.IsDevelopment())
         {
             app.UseWebAssemblyDebugging();
+            app.UseSwagger();
+            app.UseSwaggerUI();
         }
         else
         {
