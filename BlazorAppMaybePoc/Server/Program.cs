@@ -1,3 +1,5 @@
+using BlazorAppMaybePoc.Server.Data;
+
 namespace BlazorAppMaybePoc.Server;
 
 public static class Program
@@ -5,6 +7,9 @@ public static class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
+        // to register your DbContext
+        builder.Services.AddDbContext<ApplicationDbContext>();
 
         // Add services to the container.
 
