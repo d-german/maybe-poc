@@ -1,0 +1,71 @@
+@page "/usertasks"
+@using BlazorAppMaybePoc.Shared
+@inject HttpClient Http
+
+<div class="container">
+    <h1>User Tasks</h1>
+    <div class="mb-3">
+        <label for="userId" class="form-label">User ID:</label>
+        <input id="userId" @bind="userId" type="text" class="form-control" style="width:auto; display:inline-block;"/>
+        <button @onclick="LoadTasks" class="btn btn-primary">Load Tasks</button>
+    </div>
+
+    @if (toDoItems is not null)
+    {
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Due Date</th>
+                <th>
+                    Priority
+                    <a href="#" @onclick="() => SortTasks(nameof(ToDoItem.Priority))">
+                        <i class="bi bi-arrow-down-up"></i>
+                    </a>
+                </th>
+                <th>
+                    Status
+                    <a href="#" @onclick="() => SortTasks(nameof(ToDoItem.Status))">
+                        <i class="bi bi-arrow-down-up"></i>
+                    </a>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in toDoItems)
+            {
+                <tr>
+                    <td>@item.Title</td>
+                    <td>@item.Description</td>
+                    <td>@item.DueDate.ToShortDateString()</td>
+                    <td>@item.Priority</td>
+                    <td>@item.Status</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    private string userId;
+    private IEnumerable<ToDoItem> toDoItems;
+    private string sortColumn;
+    private bool sortAscending = true;
+
+    private async Task LoadTasks()
+    {
+        var response = await Http.GetAsync($"ToDoItem/user/{userId}");
+        toDoItems = await response.Content.ReadFromJsonAsync<IEnumerable<ToDoItem>>();
+    }
+
+    private async Task SortTasks(string column)
+    {
+        sortColumn = column;
+        sortAscending = !sortAscending;
+        var response = await Http.GetAsync($"ToDoItem/user/{userId}?sortColumn={sortColumn}&sortAscending={sortAscending}");
+        toDoItems = await response.Content.ReadFromJsonAsync<IEnumerable<ToDoItem>>();
+    }
+
+}
