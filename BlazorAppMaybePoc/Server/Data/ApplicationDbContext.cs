@@ -11,6 +11,6 @@ public class ApplicationDbContext : DbContext
         base.OnConfiguring(optionsBuilder);
     }
 
-    public DbSet<User>? Users { get; set; }
-    public DbSet<ToDoItem>? ToDoItems { get; set; }
+    public DbSet<User>? Users { get; init; }
+    public DbSet<ToDoItem>? ToDoItems { get; init; }
 }

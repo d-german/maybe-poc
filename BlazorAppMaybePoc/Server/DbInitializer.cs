@@ -8,6 +8,8 @@ public static class DbInitializer
 {
     public static void Initialize(ApplicationDbContext context)
     {
+        if (context == null) throw new ArgumentNullException(nameof(context));
+
         context.Database.Migrate(); // Ensure database is created and all migrations are applied
 
         // Look for any data, if data found, DB has been seeded
@@ -29,6 +31,7 @@ public static class DbInitializer
                 UserName = "User 2",
                 Email = "user2@example.com"
             },
+
             // ... other users ...
         };
 
