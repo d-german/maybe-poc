@@ -1,6 +1,6 @@
 namespace BlazorAppMaybePoc.Shared;
 
-public class User
+public record User
 {
     public int UserId { get; init; }
     public string? UserName { get; init; }
