@@ -2,11 +2,11 @@ namespace BlazorAppMaybePoc.Shared;
 
 public record ToDoItem
 {
-    public int ToDoItemId { get; set; }
-    public int UserId { get; set; }
-    public string? Title { get; set; }
-    public string? Description { get; set; }
-    public DateTime DueDate { get; set; }
-    public Priority Priority { get; set; }
-    public Status Status { get; set; }
+    public int ToDoItemId { get; init; }
+    public int UserId { get; init; }
+    public string? Title { get; init; }
+    public string? Description { get; init; }
+    public DateTime DueDate { get; init; }
+    public Priority Priority { get; init; }
+    public Status Status { get; init; }
 }
