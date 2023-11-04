@@ -30,5 +30,23 @@ public class ToDoItemController : ControllerBase
         return Ok();
     }
 
-    // ... other actions ...
+    [HttpGet("user/{userId}")]
+    public async Task<IEnumerable<ToDoItem>> GetByUserId(int userId, string sortColumn = "", bool sortAscending = true)
+    {
+        var query = _dbContext.ToDoItems.Where(item => item.UserId == userId);
+
+        if (!string.IsNullOrEmpty(sortColumn))
+        {
+            if (sortColumn == "Priority")
+            {
+                query = sortAscending ? query.OrderBy(item => item.Priority) : query.OrderByDescending(item => item.Priority);
+            }
+            else if (sortColumn == "Status")
+            {
+                query = sortAscending ? query.OrderBy(item => item.Status) : query.OrderByDescending(item => item.Status);
+            }
+        }
+
+        return await query.ToListAsync();
+    }
 }

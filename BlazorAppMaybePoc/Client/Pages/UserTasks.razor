@@ -49,14 +49,15 @@
 </div>
 
 @code {
-    private string userId;
+    private string userId = "1";
     private IEnumerable<ToDoItem> toDoItems;
-    private string sortColumn;
+    private string sortColumn = nameof(ToDoItem.Priority);
     private bool sortAscending = true;
 
     private async Task LoadTasks()
     {
-        var response = await Http.GetAsync($"ToDoItem/user/{userId}");
+        var url = $"ToDoItem/user/{userId}?sortColumn={sortColumn}&sortAscending={sortAscending}";
+        var response = await Http.GetAsync(url);
         toDoItems = await response.Content.ReadFromJsonAsync<IEnumerable<ToDoItem>>();
     }
 
