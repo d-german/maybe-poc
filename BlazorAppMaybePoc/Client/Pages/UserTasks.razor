@@ -17,17 +17,22 @@
             <tr>
                 <th>Title</th>
                 <th>Description</th>
-                <th>Due Date</th>
+                <th>
+                    <button class="btn" @onclick="() => SortTasks(nameof(ToDoItem.DueDate))">
+                        Due Date
+                        <i class="bi @(primarySortColumn == nameof(ToDoItem.DueDate) ? (sortAscending ? "bi-chevron-expand" : "bi-chevron-contract") : "bi-sort-alpha-down")"></i>
+                    </button>
+                </th>
                 <th>
                     <button class="btn" @onclick="() => SortTasks(nameof(ToDoItem.Priority))">
                         Priority
-                        <i class="bi @(sortColumn == nameof(ToDoItem.Priority) ? (sortAscending ? "bi-chevron-expand" : "bi-chevron-contract") : "bi-sort-alpha-down")"></i>
+                        <i class="bi @(primarySortColumn == nameof(ToDoItem.Priority) ? (sortAscending ? "bi-chevron-expand" : "bi-chevron-contract") : "bi-sort-alpha-down")"></i>
                     </button>
                 </th>
                 <th>
                     <button class="btn" @onclick="() => SortTasks(nameof(ToDoItem.Status))">
                         Status
-                        <i class="bi @(sortColumn == nameof(ToDoItem.Status) ? (sortAscending ? "bi-chevron-expand" : "bi-chevron-contract") : "bi-sort-alpha-down")"></i>
+                        <i class="bi @(primarySortColumn == nameof(ToDoItem.Status) ? (sortAscending ? "bi-chevron-expand" : "bi-chevron-contract") : "bi-sort-alpha-down")"></i>
                     </button>
                 </th>
             </tr>
@@ -51,23 +56,26 @@
 @code {
     private string userId = "1";
     private IEnumerable<ToDoItem> toDoItems;
-    private string sortColumn = nameof(ToDoItem.Priority);
+    private string primarySortColumn = nameof(ToDoItem.Priority);
+    private string secondarySortColumn = nameof(ToDoItem.DueDate);
     private bool sortAscending = true;
 
     private async Task LoadTasks()
     {
-        await SortTasks(sortColumn);
+        await SortTasks(primarySortColumn);
     }
 
     private async Task SortTasks(string column)
     {
-        if (sortColumn == column)
+        if (primarySortColumn == column)
         {
             sortAscending = !sortAscending; // Toggle sort order if the same column was clicked again
         }
         else
         {
-            sortColumn = column; // Change sort column if a different column was clicked
+    // Set the secondary sort column to the previous primary, and make the clicked column the new primary
+            secondarySortColumn = primarySortColumn;
+            primarySortColumn = column;
             sortAscending = true; // Reset sort order to ascending when changing columns
         }
 
@@ -76,7 +84,7 @@
 
     private async Task FetchSortedData()
     {
-        var url = $"ToDoItem/user/{userId}?sortColumn={sortColumn}&sortAscending={sortAscending}";
+        var url = $"ToDoItem/user/{userId}?primarySortColumn={primarySortColumn}&secondarySortColumn={secondarySortColumn}&sortAscending={sortAscending}";
         var response = await Http.GetAsync(url);
         toDoItems = await response.Content.ReadFromJsonAsync<IEnumerable<ToDoItem>>();
     }

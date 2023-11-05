@@ -31,19 +31,38 @@ public class ToDoItemController : ControllerBase
     }
 
     [HttpGet("user/{userId}")]
-    public async Task<IEnumerable<ToDoItem>> GetByUserId(int userId, string sortColumn = "", bool sortAscending = true)
+    public async Task<IEnumerable<ToDoItem>> GetByUserId(int userId, string primarySortColumn = "", string secondarySortColumn = "", bool sortAscending = true)
     {
         var query = _dbContext.ToDoItems.Where(item => item.UserId == userId);
 
-        if (!string.IsNullOrEmpty(sortColumn))
+        // Primary sort
+        switch (primarySortColumn)
         {
-            if (sortColumn == "Priority")
-            {
+            case nameof(ToDoItem.Priority):
                 query = sortAscending ? query.OrderBy(item => item.Priority) : query.OrderByDescending(item => item.Priority);
-            }
-            else if (sortColumn == "Status")
-            {
+                break;
+            case nameof(ToDoItem.Status):
                 query = sortAscending ? query.OrderBy(item => item.Status) : query.OrderByDescending(item => item.Status);
+                break;
+            case nameof(ToDoItem.DueDate):
+                query = sortAscending ? query.OrderBy(item => item.DueDate) : query.OrderByDescending(item => item.DueDate);
+                break;
+        }
+
+        // Secondary sort
+        if (!string.IsNullOrEmpty(secondarySortColumn) && secondarySortColumn != primarySortColumn)
+        {
+            switch (secondarySortColumn)
+            {
+                case nameof(ToDoItem.Priority):
+                    query = sortAscending ? ((IOrderedQueryable<ToDoItem>)query).ThenBy(item => item.Priority) : ((IOrderedQueryable<ToDoItem>)query).ThenByDescending(item => item.Priority);
+                    break;
+                case nameof(ToDoItem.Status):
+                    query = sortAscending ? ((IOrderedQueryable<ToDoItem>)query).ThenBy(item => item.Status) : ((IOrderedQueryable<ToDoItem>)query).ThenByDescending(item => item.Status);
+                    break;
+                case nameof(ToDoItem.DueDate):
+                    query = sortAscending ? ((IOrderedQueryable<ToDoItem>)query).ThenBy(item => item.DueDate) : ((IOrderedQueryable<ToDoItem>)query).ThenByDescending(item => item.DueDate);
+                    break;
             }
         }
 
