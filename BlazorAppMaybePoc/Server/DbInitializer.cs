@@ -13,9 +13,9 @@ public static class DbInitializer
         context.Database.Migrate(); // Ensure database is created and all migrations are applied
 
         // Look for any data, if data found, DB has been seeded
-        if (context.ToDoItems.Any() && context.Users.Any())
+        if ((context.ToDoItems ?? throw new InvalidOperationException()).Any() && (context.Users ?? throw new InvalidOperationException()).Any())
         {
-            return;
+            return; // DB has already been seeded
         }
 
         // Seed initial user data
@@ -31,34 +31,37 @@ public static class DbInitializer
                 UserName = "User 2",
                 Email = "user2@example.com"
             },
-
             // ... other users ...
         };
 
         foreach (User user in users)
         {
-            context.Users.Add(user);
+            context.Users?.Add(user);
         }
 
         context.SaveChanges();
 
-        // Seed initial task data
-        var tasks = new ToDoItem[]
+        // Seed initial task data with additional tasks for User 1 and User 2
+        var random = new Random();
+        var tasks = Enumerable.Range(1, 15).SelectMany(i => new ToDoItem[]
         {
             new ToDoItem
             {
-                Description = "Task 1",
-                DueDate = DateTime.Now.AddDays(1),
-                UserId = users[0].UserId // Assign user to task
+                Description = $"Task for User 1 - {i}",
+                DueDate = DateTime.Now.AddDays(random.Next(1, 30)),
+                UserId = users[0].UserId,
+                Priority = (Priority)random.Next(0, 3),
+                Status = (Status)random.Next(0, 3)
             },
             new ToDoItem
             {
-                Description = "Task 2",
-                DueDate = DateTime.Now.AddDays(2),
-                UserId = users[1].UserId // Assign user to task
-            },
-            // ... other tasks ...
-        };
+                Description = $"Task for User 2 - {i}",
+                DueDate = DateTime.Now.AddDays(random.Next(1, 30)),
+                UserId = users[1].UserId,
+                Priority = (Priority)random.Next(0, 3),
+                Status = (Status)random.Next(0, 3)
+            }
+        }).ToArray();
 
         foreach (ToDoItem task in tasks)
         {

@@ -21,13 +21,13 @@
                 <th>
                     Priority
                     <a href="#" @onclick="() => SortTasks(nameof(ToDoItem.Priority))">
-                        <i class="bi bi-arrow-down-up"></i>
+                        <i class="bi @(sortColumn == nameof(ToDoItem.Priority) ? (sortAscending ? "bi-arrow-down" : "bi-arrow-up") : "bi-arrow-down-up")"></i>
                     </a>
                 </th>
                 <th>
                     Status
                     <a href="#" @onclick="() => SortTasks(nameof(ToDoItem.Status))">
-                        <i class="bi bi-arrow-down-up"></i>
+                        <i class="bi @(sortColumn == nameof(ToDoItem.Status) ? (sortAscending ? "bi-arrow-down" : "bi-arrow-up") : "bi-arrow-down-up")"></i>
                     </a>
                 </th>
             </tr>
@@ -63,8 +63,15 @@
 
     private async Task SortTasks(string column)
     {
-        sortColumn = column;
-        sortAscending = !sortAscending;
+        if (sortColumn == column)
+        {
+            sortAscending = !sortAscending; // Toggle sort order if the same column was clicked again
+        }
+        else
+        {
+            sortColumn = column; // Change sort column if a different column was clicked
+            sortAscending = true; // Reset sort order to ascending when changing columns
+        }
         var response = await Http.GetAsync($"ToDoItem/user/{userId}?sortColumn={sortColumn}&sortAscending={sortAscending}");
         toDoItems = await response.Content.ReadFromJsonAsync<IEnumerable<ToDoItem>>();
     }
