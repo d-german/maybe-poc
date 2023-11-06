@@ -1,6 +1,7 @@
 using BlazorAppMaybePoc.Server.Data;
 using BlazorAppMaybePoc.Shared;
 using Microsoft.EntityFrameworkCore;
+using static BlazorAppMaybePoc.Shared.ToDoSortColumn;
 
 namespace BlazorAppMaybePoc.Server.Repositories;
 
@@ -22,7 +23,7 @@ public class ToDoItemRepository : IToDoItemRepository
         {
             ToDoSortColumn.Priority => request.SortAscending ? query.OrderBy(item => item.Priority) : query.OrderByDescending(item => item.Priority),
             ToDoSortColumn.Status => request.SortAscending ? query.OrderBy(item => item.Status) : query.OrderByDescending(item => item.Status),
-            ToDoSortColumn.DueDate => request.SortAscending ? query.OrderBy(item => item.DueDate) : query.OrderByDescending(item => item.DueDate),
+            DueDate => request.SortAscending ? query.OrderBy(item => item.DueDate) : query.OrderByDescending(item => item.DueDate),
             _ => query.OrderBy(item => item.DueDate) // Default sort, if needed
         };
 
@@ -33,7 +34,7 @@ public class ToDoItemRepository : IToDoItemRepository
             {
                 ToDoSortColumn.Priority => request.SortAscending ? ((IOrderedQueryable<ToDoItem>)query).ThenBy(item => item.Priority) : ((IOrderedQueryable<ToDoItem>)query).ThenByDescending(item => item.Priority),
                 ToDoSortColumn.Status => request.SortAscending ? ((IOrderedQueryable<ToDoItem>)query).ThenBy(item => item.Status) : ((IOrderedQueryable<ToDoItem>)query).ThenByDescending(item => item.Status),
-                ToDoSortColumn.DueDate => request.SortAscending ? ((IOrderedQueryable<ToDoItem>)query).ThenBy(item => item.DueDate) : ((IOrderedQueryable<ToDoItem>)query).ThenByDescending(item => item.DueDate),
+                DueDate => request.SortAscending ? ((IOrderedQueryable<ToDoItem>)query).ThenBy(item => item.DueDate) : ((IOrderedQueryable<ToDoItem>)query).ThenByDescending(item => item.DueDate),
                 _ => query // No secondary sort if it's the same as the primary or not present
             };
         }
