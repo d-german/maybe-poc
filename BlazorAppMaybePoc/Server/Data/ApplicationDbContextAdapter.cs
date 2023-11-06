@@ -3,16 +3,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BlazorAppMaybePoc.Server.Data;
 
-public class ToDoItemDataAccess : IToDoItemDataAccess
+public class ApplicationDbContextAdapter : IApplicationDbContext
 {
-    private readonly DbContext _dbContext;
+    private readonly ApplicationDbContext _dbContext;
 
-    public ToDoItemDataAccess(DbContext dbContext)
+    public ApplicationDbContextAdapter(ApplicationDbContext dbContext)
     {
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
     }
 
-    public IEnumerable<ToDoItem> ToDoItems => _dbContext.Set<ToDoItem>();
+    public DbSet<ToDoItem> ToDoItems => _dbContext.Set<ToDoItem>();
 
     public Task<int> PersistChangesAsync(CancellationToken cancellationToken = default) => _dbContext.SaveChangesAsync(cancellationToken);
 }

@@ -19,6 +19,7 @@ public static class Program
         // Add services to the container.
 
         builder.Services.AddScoped<IToDoItemRepository, ToDoItemRepository>();
+        builder.Services.AddScoped<IApplicationDbContext, ApplicationDbContextAdapter>();
 
         builder.Services.AddControllersWithViews();
         builder.Services.AddRazorPages();

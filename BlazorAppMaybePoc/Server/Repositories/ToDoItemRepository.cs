@@ -7,16 +7,16 @@ namespace BlazorAppMaybePoc.Server.Repositories;
 
 public class ToDoItemRepository : IToDoItemRepository
 {
-    private readonly ApplicationDbContext _dbContext;
+    private readonly IApplicationDbContext _applicationDbContext;
 
-    public ToDoItemRepository(ApplicationDbContext dbContext)
+    public ToDoItemRepository(IApplicationDbContext applicationDbContext)
     {
-        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+        _applicationDbContext = applicationDbContext ?? throw new ArgumentNullException(nameof(applicationDbContext));
     }
 
     public async Task<IEnumerable<ToDoItem>> GetToDoItemsAsync(ToDoItemsRequest request)
     {
-        var query = _dbContext.ToDoItems!.Where(item => item.UserId == request.UserId);
+        var query = _applicationDbContext.ToDoItems!.Where(item => item.UserId == request.UserId);
 
         // Primary sort
         query = request.PrimarySortColumn switch
@@ -44,12 +44,12 @@ public class ToDoItemRepository : IToDoItemRepository
 
     public async Task<IEnumerable<ToDoItem>> GetAsync()
     {
-        return await _dbContext.ToDoItems!.ToListAsync();
+        return await _applicationDbContext.ToDoItems!.ToListAsync();
     }
 
     public async Task CreateAsync(ToDoItem newToDoItem)
     {
-        _dbContext.ToDoItems?.Add(newToDoItem);
-        await _dbContext.SaveChangesAsync();
+        _applicationDbContext.ToDoItems?.Add(newToDoItem);
+        await _applicationDbContext.PersistChangesAsync();
     }
 }
