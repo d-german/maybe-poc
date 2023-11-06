@@ -1,4 +1,5 @@
 using BlazorAppMaybePoc.Server.Data;
+using BlazorAppMaybePoc.Server.Repositories;
 
 namespace BlazorAppMaybePoc.Server;
 
@@ -16,6 +17,8 @@ public static class Program
         builder.Services.AddSwaggerGen();
 
         // Add services to the container.
+
+        builder.Services.AddScoped<IToDoItemRepository, ToDoItemRepository>();
 
         builder.Services.AddControllersWithViews();
         builder.Services.AddRazorPages();

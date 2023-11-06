@@ -1,7 +1,6 @@
-using BlazorAppMaybePoc.Server.Data;
+using BlazorAppMaybePoc.Server.Repositories;
 using BlazorAppMaybePoc.Shared;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace BlazorAppMaybePoc.Server.Controllers;
 
@@ -9,53 +8,44 @@ namespace BlazorAppMaybePoc.Server.Controllers;
 [Route("[controller]")]
 public class ToDoItemController : ControllerBase
 {
-    private readonly ApplicationDbContext _dbContext;
+    private readonly IToDoItemRepository _toDoItemRepository;
 
-    public ToDoItemController(ApplicationDbContext dbContext)
+    public ToDoItemController(IToDoItemRepository toDoItemRepository)
     {
-        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+        _toDoItemRepository = toDoItemRepository ?? throw new ArgumentNullException(nameof(toDoItemRepository));
     }
 
     [HttpGet]
-    public async Task<IEnumerable<ToDoItem>> Get()
+    public Task<IEnumerable<ToDoItem>> Get()
     {
-        return await _dbContext.ToDoItems!.ToListAsync();
+        return _toDoItemRepository.GetAsync();
     }
 
     [HttpPost]
     public async Task<IActionResult> Create(ToDoItem newToDoItem)
     {
-        _dbContext.ToDoItems?.Add(newToDoItem);
-        await _dbContext.SaveChangesAsync();
+        await _toDoItemRepository.CreateAsync(newToDoItem);
         return Ok();
     }
 
     [HttpGet("user/{userId}")]
-    public async Task<IEnumerable<ToDoItem>> GetByUserId(int userId, string primarySortColumn = "", string secondarySortColumn = "", bool sortAscending = true)
+    public async Task<ActionResult<IEnumerable<ToDoItem>>> GetByUserId(int userId, string primarySortColumn = "", string secondarySortColumn = "", bool sortAscending = true)
     {
-        var query = _dbContext.ToDoItems!.Where(item => item.UserId == userId);
-
-        // Primary sort
-        query = primarySortColumn switch
+        var request = new ToDoItemsRequest
         {
-            nameof(ToDoItem.Priority) => sortAscending ? query.OrderBy(item => item.Priority) : query.OrderByDescending(item => item.Priority),
-            nameof(ToDoItem.Status) => sortAscending ? query.OrderBy(item => item.Status) : query.OrderByDescending(item => item.Status),
-            nameof(ToDoItem.DueDate) => sortAscending ? query.OrderBy(item => item.DueDate) : query.OrderByDescending(item => item.DueDate),
-            _ => query
+            UserId = userId,
+            PrimarySortColumn = primarySortColumn.StringToEnum(ToDoSortColumn.DueDate),
+            SecondarySortColumn = secondarySortColumn.StringToEnum<ToDoSortColumn>(),
+            SortAscending = sortAscending
         };
 
-        // Secondary sort
-        if (!string.IsNullOrEmpty(secondarySortColumn) && secondarySortColumn != primarySortColumn)
+        try
         {
-            query = secondarySortColumn switch
-            {
-                nameof(ToDoItem.Priority) => sortAscending ? ((IOrderedQueryable<ToDoItem>)query).ThenBy(item => item.Priority) : ((IOrderedQueryable<ToDoItem>)query).ThenByDescending(item => item.Priority),
-                nameof(ToDoItem.Status) => sortAscending ? ((IOrderedQueryable<ToDoItem>)query).ThenBy(item => item.Status) : ((IOrderedQueryable<ToDoItem>)query).ThenByDescending(item => item.Status),
-                nameof(ToDoItem.DueDate) => sortAscending ? ((IOrderedQueryable<ToDoItem>)query).ThenBy(item => item.DueDate) : ((IOrderedQueryable<ToDoItem>)query).ThenByDescending(item => item.DueDate),
-                _ => query
-            };
+            return Ok(await _toDoItemRepository.GetToDoItemsAsync(request));
         }
-
-        return await query.ToListAsync();
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while processing your request.");
+        }
     }
 }
