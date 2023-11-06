@@ -13,19 +13,19 @@ public class ToDoItemController : ControllerBase
 
     public ToDoItemController(ApplicationDbContext dbContext)
     {
-        _dbContext = dbContext;
+        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
     }
 
     [HttpGet]
     public async Task<IEnumerable<ToDoItem>> Get()
     {
-        return await _dbContext.ToDoItems.ToListAsync();
+        return await _dbContext.ToDoItems!.ToListAsync();
     }
 
     [HttpPost]
     public async Task<IActionResult> Create(ToDoItem newToDoItem)
     {
-        _dbContext.ToDoItems.Add(newToDoItem);
+        _dbContext.ToDoItems?.Add(newToDoItem);
         await _dbContext.SaveChangesAsync();
         return Ok();
     }
@@ -33,7 +33,7 @@ public class ToDoItemController : ControllerBase
     [HttpGet("user/{userId}")]
     public async Task<IEnumerable<ToDoItem>> GetByUserId(int userId, string primarySortColumn = "", string secondarySortColumn = "", bool sortAscending = true)
     {
-        var query = _dbContext.ToDoItems.Where(item => item.UserId == userId);
+        var query = _dbContext.ToDoItems!.Where(item => item.UserId == userId);
 
         // Primary sort
         switch (primarySortColumn)

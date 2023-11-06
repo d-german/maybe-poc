@@ -19,7 +19,7 @@ public static class DbInitializer
         }
 
         // Seed initial user data
-        var users = new User[]
+        var users = new[]
         {
             new User
             {
@@ -34,7 +34,7 @@ public static class DbInitializer
             // ... other users ...
         };
 
-        foreach (User user in users)
+        foreach (var user in users)
         {
             context.Users?.Add(user);
         }
@@ -43,7 +43,7 @@ public static class DbInitializer
 
         // Seed initial task data with additional tasks for User 1 and User 2
         var random = new Random();
-        var tasks = Enumerable.Range(1, 15).SelectMany(i => new ToDoItem[]
+        var tasks = Enumerable.Range(1, 15).SelectMany(i => new[]
         {
             new ToDoItem
             {
@@ -63,7 +63,7 @@ public static class DbInitializer
             }
         }).ToArray();
 
-        foreach (ToDoItem task in tasks)
+        foreach (var task in tasks)
         {
             context.ToDoItems.Add(task);
         }
