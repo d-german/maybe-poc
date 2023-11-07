@@ -1,5 +1,6 @@
 using BlazorAppMaybePoc.Server.Repositories;
 using BlazorAppMaybePoc.Shared;
+using BlazorAppMaybePoc.Shared.Common;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlazorAppMaybePoc.Server.Controllers;
@@ -16,9 +17,16 @@ public class ToDoItemController : ControllerBase
     }
 
     [HttpGet]
-    public Task<IEnumerable<ToDoItem>> Get()
+    public async Task<IActionResult> Get()
     {
-        return _toDoItemRepository.GetAsync();
+        var result = await _toDoItemRepository.GetAsync();
+        return result switch
+        {
+            Nothing<IEnumerable<ToDoItem>> _ => NotFound("No ToDo items found!"),
+            Something<IEnumerable<ToDoItem>> s => Ok(s.Value),
+            Error<IEnumerable<ToDoItem>> e => StatusCode(500, e.ErrorMessage.Message),
+            _ => StatusCode(500, "An unknown error occurred")
+        };
     }
 
     [HttpPost]
@@ -29,7 +37,7 @@ public class ToDoItemController : ControllerBase
     }
 
     [HttpGet("user/{userId}")]
-    public async Task<ActionResult<IEnumerable<ToDoItem>>> GetByUserId(int userId, string primarySortColumn = "", string secondarySortColumn = "", bool sortAscending = true)
+    public async Task<IActionResult> GetByUserId(int userId, string primarySortColumn = "", string secondarySortColumn = "", bool sortAscending = true)
     {
         var request = new ToDoItemsRequest
         {
@@ -39,13 +47,12 @@ public class ToDoItemController : ControllerBase
             SortAscending = sortAscending
         };
 
-        try
+        return await _toDoItemRepository.GetToDoItemsAsync(request) switch
         {
-            return Ok(await _toDoItemRepository.GetToDoItemsAsync(request));
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while processing your request.");
-        }
+            Nothing<IEnumerable<ToDoItem>> _ => NotFound("No ToDo items found for the user."),
+            Something<IEnumerable<ToDoItem>> s => Ok(s.Value),
+            Error<IEnumerable<ToDoItem>> e => StatusCode(500, e.ErrorMessage.Message),
+            _ => StatusCode(500, "An unknown error occurred")
+        };
     }
 }

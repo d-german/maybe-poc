@@ -1,7 +1,7 @@
 using BlazorAppMaybePoc.Server.Data;
 using BlazorAppMaybePoc.Shared;
+using BlazorAppMaybePoc.Shared.Common;
 using Microsoft.EntityFrameworkCore;
-using static BlazorAppMaybePoc.Shared.ToDoSortColumn;
 
 namespace BlazorAppMaybePoc.Server.Repositories;
 
@@ -14,42 +14,31 @@ public class ToDoItemRepository : IToDoItemRepository
         _applicationDbContext = applicationDbContext ?? throw new ArgumentNullException(nameof(applicationDbContext));
     }
 
-    public async Task<IEnumerable<ToDoItem>> GetToDoItemsAsync(ToDoItemsRequest request)
+    public async Task<Maybe<IEnumerable<ToDoItem>>> GetToDoItemsAsync(ToDoItemsRequest request)
     {
-        var query = _applicationDbContext.ToDoItems!.Where(item => item.UserId == request.UserId);
+        return (await _applicationDbContext.GetToDoItemsAsync()).Bind(items =>
+            items.Where(item => item.UserId == request.UserId).ToList().AsEnumerable());
+    }
 
-        // Primary sort
-        query = request.PrimarySortColumn switch
-        {
-            ToDoSortColumn.Priority => request.SortAscending ? query.OrderBy(item => item.Priority) : query.OrderByDescending(item => item.Priority),
-            ToDoSortColumn.Status => request.SortAscending ? query.OrderBy(item => item.Status) : query.OrderByDescending(item => item.Status),
-            DueDate => request.SortAscending ? query.OrderBy(item => item.DueDate) : query.OrderByDescending(item => item.DueDate),
-            _ => query.OrderBy(item => item.DueDate) // Default sort, if needed
-        };
+    public async Task<Maybe<IEnumerable<ToDoItem>>> GetAsync()
+    {
+        return (await _applicationDbContext.GetToDoItemsAsync()).Bind(items => items.ToList().AsEnumerable());
+    }
 
-        // Secondary sort
-        if (request.SecondarySortColumn.HasValue && request.SecondarySortColumn.Value != request.PrimarySortColumn)
+    public async Task<Maybe<ToDoItem>> CreateAsync(ToDoItem newToDoItem)
+    {
+        switch (await _applicationDbContext.GetToDoItemsAsync())
         {
-            query = request.SecondarySortColumn switch
+            case Something<DbSet<ToDoItem>> something:
             {
-                ToDoSortColumn.Priority => request.SortAscending ? ((IOrderedQueryable<ToDoItem>)query).ThenBy(item => item.Priority) : ((IOrderedQueryable<ToDoItem>)query).ThenByDescending(item => item.Priority),
-                ToDoSortColumn.Status => request.SortAscending ? ((IOrderedQueryable<ToDoItem>)query).ThenBy(item => item.Status) : ((IOrderedQueryable<ToDoItem>)query).ThenByDescending(item => item.Status),
-                DueDate => request.SortAscending ? ((IOrderedQueryable<ToDoItem>)query).ThenBy(item => item.DueDate) : ((IOrderedQueryable<ToDoItem>)query).ThenByDescending(item => item.DueDate),
-                _ => query // No secondary sort if it's the same as the primary or not present
-            };
+                something.Value.Add(newToDoItem);
+                var saveResult = await _applicationDbContext.PersistChangesAsync();
+                return saveResult.Bind(_ => new Something<ToDoItem>(newToDoItem));
+            }
+            case Error<DbSet<ToDoItem>> error:
+                return new Error<ToDoItem>(error.ErrorMessage);
+            default:
+                return new Nothing<ToDoItem>();
         }
-
-        return await query.ToListAsync();
-    }
-
-    public async Task<IEnumerable<ToDoItem>> GetAsync()
-    {
-        return await _applicationDbContext.ToDoItems!.ToListAsync();
-    }
-
-    public async Task CreateAsync(ToDoItem newToDoItem)
-    {
-        _applicationDbContext.ToDoItems?.Add(newToDoItem);
-        await _applicationDbContext.PersistChangesAsync();
     }
 }

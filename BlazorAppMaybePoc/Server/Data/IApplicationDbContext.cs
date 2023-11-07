@@ -1,10 +1,11 @@
 using BlazorAppMaybePoc.Shared;
+using BlazorAppMaybePoc.Shared.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlazorAppMaybePoc.Server.Data;
 
 public interface IApplicationDbContext
 {
-    DbSet<ToDoItem> ToDoItems { get; }
-    Task<int> PersistChangesAsync(CancellationToken cancellationToken = default);
+    Task<Maybe<DbSet<ToDoItem>>> GetToDoItemsAsync();
+    Task<Maybe<int>> PersistChangesAsync(CancellationToken cancellationToken = default);
 }
