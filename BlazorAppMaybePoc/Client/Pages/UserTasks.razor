@@ -1,7 +1,6 @@
 @page "/usertasks"
 @using BlazorAppMaybePoc.Shared
 
-
 <div class="container">
     <h1>User Tasks</h1>
     <div class="mb-3">
@@ -44,9 +43,24 @@
             <tr>
                 <th>Title</th>
                 <th>Description</th>
-                <th>Due Date</th>
-                <th>Priority</th>
-                <th>Status</th>
+                <th>
+                    Due Date
+                    <button @onclick="() => SortTasks(nameof(ToDoItem.DueDate))">
+                        <span class="oi oi-arrow-thick-top"></span>
+                    </button>
+                </th>
+                <th>
+                    Priority
+                    <button @onclick="() => SortTasks(nameof(ToDoItem.Priority))">
+                        <span class="oi oi-arrow-thick-top"></span>
+                    </button>
+                </th>
+                <th>
+                    Status
+                    <button @onclick="() => SortTasks(nameof(ToDoItem.Status))">
+                        <span class="oi oi-arrow-thick-top"></span>
+                    </button>
+                </th>
             </tr>
             </thead>
             <tbody>
