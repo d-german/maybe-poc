@@ -46,19 +46,19 @@
                 <th>
                     Due Date
                     <button @onclick="() => SortTasks(nameof(ToDoItem.DueDate))">
-                        <span class="oi oi-arrow-thick-top"></span>
+                        <span class="@GetSortIconClass(nameof(ToDoItem.DueDate))"></span>
                     </button>
                 </th>
                 <th>
                     Priority
                     <button @onclick="() => SortTasks(nameof(ToDoItem.Priority))">
-                        <span class="oi oi-arrow-thick-top"></span>
+                        <span class="@GetSortIconClass(nameof(ToDoItem.Priority))"></span>
                     </button>
                 </th>
                 <th>
                     Status
                     <button @onclick="() => SortTasks(nameof(ToDoItem.Status))">
-                        <span class="oi oi-arrow-thick-top"></span>
+                        <span class="@GetSortIconClass(nameof(ToDoItem.Status))"></span>
                     </button>
                 </th>
             </tr>
