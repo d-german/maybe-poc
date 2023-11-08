@@ -6,11 +6,38 @@
     <h1>User Tasks</h1>
     <div class="mb-3">
         <label for="userId" class="form-label">User ID:</label>
-        <input id="userId" @bind="userId" type="text" class="form-control" style="width:auto; display:inline-block;"/>
+        <input id="userId" @bind="_userId" type="text" class="form-control" style="width:auto; display:inline-block;"/>
         <button @onclick="LoadTasks" class="btn btn-primary">Load Tasks</button>
     </div>
 
-    @if (toDoItems is not null)
+    <div class="mt-4">
+        <h2>Add New Task</h2>
+        <EditForm Model="@_formModel" OnValidSubmit="@HandleCreate">
+            <div class="form-group">
+                <label for="title">Title:</label>
+                <InputText id="title" class="form-control" @bind-Value="_formModel.Title"/>
+            </div>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <InputTextArea id="description" class="form-control" @bind-Value="_formModel.Description"/>
+            </div>
+            <div class="form-group">
+                <label for="dueDate">Due Date:</label>
+                <InputDate id="dueDate" class="form-control" @bind-Value="_formModel.DueDate"/>
+            </div>
+            <div class="form-group">
+                <label for="status">Status:</label>
+                <InputSelect id="status" class="form-control" @bind-Value="_formModel.Status">
+                    <option value="@Status.NotStarted">Not Started</option>
+                    <option value="@Status.InProgress">In Progress</option>
+                    <option value="@Status.Completed">Completed</option>
+                </InputSelect>
+            </div>
+            <button type="submit" class="btn btn-success">Add Task</button>
+        </EditForm>
+    </div>
+
+    @if (_toDoItems is not null)
     {
         <table class="table table-striped">
             <thead>
@@ -20,25 +47,25 @@
                 <th>
                     <button class="btn" @onclick="() => SortTasks(nameof(ToDoItem.DueDate))">
                         Due Date
-                        <i class="bi @(primarySortColumn == nameof(ToDoItem.DueDate) ? (sortAscending ? "bi-chevron-expand" : "bi-chevron-contract") : "bi-sort-alpha-down")"></i>
+                        <i class="bi @(_primarySortColumn == nameof(ToDoItem.DueDate) ? (_sortAscending ? "bi-chevron-expand" : "bi-chevron-contract") : "bi-sort-alpha-down")"></i>
                     </button>
                 </th>
                 <th>
                     <button class="btn" @onclick="() => SortTasks(nameof(ToDoItem.Priority))">
                         Priority
-                        <i class="bi @(primarySortColumn == nameof(ToDoItem.Priority) ? (sortAscending ? "bi-chevron-expand" : "bi-chevron-contract") : "bi-sort-alpha-down")"></i>
+                        <i class="bi @(_primarySortColumn == nameof(ToDoItem.Priority) ? (_sortAscending ? "bi-chevron-expand" : "bi-chevron-contract") : "bi-sort-alpha-down")"></i>
                     </button>
                 </th>
                 <th>
                     <button class="btn" @onclick="() => SortTasks(nameof(ToDoItem.Status))">
                         Status
-                        <i class="bi @(primarySortColumn == nameof(ToDoItem.Status) ? (sortAscending ? "bi-chevron-expand" : "bi-chevron-contract") : "bi-sort-alpha-down")"></i>
+                        <i class="bi @(_primarySortColumn == nameof(ToDoItem.Status) ? (_sortAscending ? "bi-chevron-expand" : "bi-chevron-contract") : "bi-sort-alpha-down")"></i>
                     </button>
                 </th>
             </tr>
             </thead>
             <tbody>
-            @foreach (var item in toDoItems)
+            @foreach (var item in _toDoItems)
             {
                 <tr>
                     <td>@item.Title</td>
@@ -54,39 +81,68 @@
 </div>
 
 @code {
-    private string userId = "1";
-    private IEnumerable<ToDoItem> toDoItems;
-    private string primarySortColumn = nameof(ToDoItem.Priority);
-    private string secondarySortColumn = nameof(ToDoItem.DueDate);
-    private bool sortAscending = true;
+    private string _userId = "1";
+    private IEnumerable<ToDoItem> _toDoItems;
+    private string _primarySortColumn = nameof(ToDoItem.Priority);
+    private string _secondarySortColumn = nameof(ToDoItem.DueDate);
+    private bool _sortAscending = true;
 
-    private async Task LoadTasks()
+    private ToDoItemFormModel _formModel = new();
+
+    private Task LoadTasks()
     {
-        await SortTasks(primarySortColumn);
+        return SortTasks(_primarySortColumn);
     }
 
-    private async Task SortTasks(string column)
+    private Task SortTasks(string column)
     {
-        if (primarySortColumn == column)
+        if (_primarySortColumn == column)
         {
-            sortAscending = !sortAscending; // Toggle sort order if the same column was clicked again
+            _sortAscending = !_sortAscending;
         }
         else
         {
-    // Set the secondary sort column to the previous primary, and make the clicked column the new primary
-            secondarySortColumn = primarySortColumn;
-            primarySortColumn = column;
-            sortAscending = true; // Reset sort order to ascending when changing columns
+            _secondarySortColumn = _primarySortColumn;
+            _primarySortColumn = column;
+            _sortAscending = true;
         }
 
-        await FetchSortedData();
+        return FetchSortedData();
     }
 
     private async Task FetchSortedData()
     {
-        var url = $"ToDoItem/user/{userId}?primarySortColumn={primarySortColumn}&secondarySortColumn={secondarySortColumn}&sortAscending={sortAscending}";
+        var url = $"ToDoItem/user/{_userId}?primarySortColumn={_primarySortColumn}&secondarySortColumn={_secondarySortColumn}&sortAscending={_sortAscending}";
         var response = await Http.GetAsync(url);
-        toDoItems = await response.Content.ReadFromJsonAsync<IEnumerable<ToDoItem>>();
+        _toDoItems = await response.Content.ReadFromJsonAsync<IEnumerable<ToDoItem>>();
+    }
+
+    private async Task HandleCreate()
+    {
+        var newToDoItem = new ToDoItem
+        {
+            Title = _formModel.Title,
+            Description = _formModel.Description,
+            DueDate = _formModel.DueDate,
+            Priority = _formModel.Priority,
+            Status = _formModel.Status
+        };
+
+        var response = await Http.PostAsJsonAsync("ToDoItem", newToDoItem);
+        if (response.IsSuccessStatusCode)
+        {
+            _formModel = new ToDoItemFormModel();
+            await LoadTasks();
+        }
+    }
+
+    private class ToDoItemFormModel
+    {
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public DateTime DueDate { get; set; } = DateTime.Now;
+        public Priority Priority { get; set; } = Priority.Low;
+        public Status Status { get; set; } = Status.NotStarted;
     }
 
 }
