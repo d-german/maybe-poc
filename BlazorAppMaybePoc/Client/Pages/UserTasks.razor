@@ -1,6 +1,6 @@
 @page "/usertasks"
 @using BlazorAppMaybePoc.Shared
-@inject HttpClient Http
+
 
 <div class="container">
     <h1>User Tasks</h1>
@@ -64,72 +64,3 @@
         </table>
     }
 </div>
-
-@code {
-    private IEnumerable<ToDoItem> _toDoItems;
-    private string _primarySortColumn = nameof(ToDoItem.Priority);
-    private string _secondarySortColumn = nameof(ToDoItem.DueDate);
-    private bool _sortAscending = true;
-    private ToDoItemFormModel _formModel = new();
-
-    private Task LoadTasks()
-    {
-        return SortTasks(_primarySortColumn);
-    }
-
-    private Task SortTasks(string column)
-    {
-        if (_primarySortColumn == column)
-        {
-            _sortAscending = !_sortAscending;
-        }
-        else
-        {
-            _secondarySortColumn = _primarySortColumn;
-            _primarySortColumn = column;
-            _sortAscending = true;
-        }
-
-        return FetchSortedData();
-    }
-
-    private async Task FetchSortedData()
-    {
-        var url = $"ToDoItem/user/{_formModel.UserId}?primarySortColumn={_primarySortColumn}&secondarySortColumn={_secondarySortColumn}&sortAscending={_sortAscending}";
-        var response = await Http.GetAsync(url);
-        _toDoItems = await response.Content.ReadFromJsonAsync<IEnumerable<ToDoItem>>();
-    }
-
-    private async Task HandleCreate()
-    {
-        var newToDoItem = _formModel.ToToDoItem();
-        var response = await Http.PostAsJsonAsync("ToDoItem", newToDoItem);
-        if (response.IsSuccessStatusCode)
-        {
-            await LoadTasks();
-        }
-    }
-
-    private class ToDoItemFormModel
-    {
-        public string UserId { get; set; }
-        public string Title { get; set; }
-        public string Description { get; set; }
-        public DateTime DueDate { get; set; } = DateTime.Now;
-        public Priority Priority { get; set; }
-        public Status Status { get; set; } = Status.NotStarted;
-
-        public ToDoItem ToToDoItem() => new ToDoItem
-        {
-            Title = Title,
-            Description = Description,
-            DueDate = DueDate,
-            Priority = Priority,
-            Status = Status
-        } with
-        {
-            UserId = int.Parse(UserId)
-            };
-    }
-
-}
