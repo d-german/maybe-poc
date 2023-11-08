@@ -32,8 +32,7 @@ public class ToDoItemRepository : IToDoItemRepository
             case Something<DbSet<ToDoItem>> something:
             {
                 something.Value.Add(newToDoItem);
-                var saveResult = await _applicationDbContext.PersistChangesAsync();
-                return saveResult.Bind(_ => new Something<ToDoItem>(newToDoItem));
+                return (await _applicationDbContext.PersistChangesAsync()).Bind(_ => new Something<ToDoItem>(newToDoItem));
             }
             case Error<DbSet<ToDoItem>> error:
                 return new Error<ToDoItem>(error.ErrorMessage);
