@@ -16,13 +16,39 @@ public class ToDoItemRepository : IToDoItemRepository
 
     public async Task<Maybe<IEnumerable<ToDoItem>>> GetToDoItemsAsync(ToDoItemsRequest request)
     {
-        return (await _applicationDbContext.GetToDoItemsAsync()).Bind(items =>
-            items.Where(item => item.UserId == request.UserId).ToList().AsEnumerable());
+        return (await _applicationDbContext.GetToDoItemsAsync())
+            .Bind(items => items.Where(item => item.UserId == request.UserId))
+            .Bind(items =>
+            {
+                // Primary sort
+                var sortedItems = request.PrimarySortColumn switch
+                {
+                    ToDoSortColumn.Priority => request.SortAscending ? items.OrderBy(item => item.Priority) : items.OrderByDescending(item => item.Priority),
+                    ToDoSortColumn.Status => request.SortAscending ? items.OrderBy(item => item.Status) : items.OrderByDescending(item => item.Status),
+                    ToDoSortColumn.DueDate => request.SortAscending ? items.OrderBy(item => item.DueDate) : items.OrderByDescending(item => item.DueDate),
+                    _ => items.OrderBy(item => item.DueDate) // Default sort, if needed
+                };
+
+                // Secondary sort
+                if (request.SecondarySortColumn.HasValue && request.SecondarySortColumn.Value != request.PrimarySortColumn)
+                {
+                    sortedItems = request.SecondarySortColumn switch
+                    {
+                        ToDoSortColumn.Priority => request.SortAscending ? sortedItems.ThenBy(item => item.Priority) : sortedItems.ThenByDescending(item => item.Priority),
+                        ToDoSortColumn.Status => request.SortAscending ? sortedItems.ThenBy(item => item.Status) : sortedItems.ThenByDescending(item => item.Status),
+                        ToDoSortColumn.DueDate => request.SortAscending ? sortedItems.ThenBy(item => item.DueDate) : sortedItems.ThenByDescending(item => item.DueDate),
+                        _ => sortedItems // No secondary sort if it's the same as the primary or not present
+                    };
+                }
+
+                // The ToMaybe() extension method wraps the sortedItems back into a Maybe
+                return sortedItems.AsEnumerable().ToMaybe();
+            });
     }
 
     public async Task<Maybe<IEnumerable<ToDoItem>>> GetAsync()
     {
-        return (await _applicationDbContext.GetToDoItemsAsync()).Bind(items => items.ToList().AsEnumerable());
+        return (await _applicationDbContext.GetToDoItemsAsync()).Bind(items => items.AsEnumerable());
     }
 
     public async Task<Maybe<ToDoItem>> CreateAsync(ToDoItem newToDoItem)

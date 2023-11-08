@@ -43,7 +43,7 @@ public static class DbInitializer
 
         // Seed initial task data with additional tasks for User 1 and User 2
         var random = new Random();
-        var tasks = Enumerable.Range(1, 15).SelectMany(i => new[]
+        var tasks = Enumerable.Range(1, 3).SelectMany(i => new[]
         {
             new ToDoItem
             {
