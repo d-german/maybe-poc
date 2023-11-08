@@ -6,7 +6,7 @@
     <h1>User Tasks</h1>
     <div class="mb-3">
         <label for="userId" class="form-label">User ID:</label>
-        <input id="userId" @bind="_userId" type="text" class="form-control" style="width:auto; display:inline-block;"/>
+        <input id="userId" @bind="_formModel.UserId" type="text" class="form-control" style="width:auto; display:inline-block;"/>
         <button @onclick="LoadTasks" class="btn btn-primary">Load Tasks</button>
     </div>
 
@@ -44,24 +44,9 @@
             <tr>
                 <th>Title</th>
                 <th>Description</th>
-                <th>
-                    <button class="btn" @onclick="() => SortTasks(nameof(ToDoItem.DueDate))">
-                        Due Date
-                        <i class="bi @(_primarySortColumn == nameof(ToDoItem.DueDate) ? (_sortAscending ? "bi-chevron-expand" : "bi-chevron-contract") : "bi-sort-alpha-down")"></i>
-                    </button>
-                </th>
-                <th>
-                    <button class="btn" @onclick="() => SortTasks(nameof(ToDoItem.Priority))">
-                        Priority
-                        <i class="bi @(_primarySortColumn == nameof(ToDoItem.Priority) ? (_sortAscending ? "bi-chevron-expand" : "bi-chevron-contract") : "bi-sort-alpha-down")"></i>
-                    </button>
-                </th>
-                <th>
-                    <button class="btn" @onclick="() => SortTasks(nameof(ToDoItem.Status))">
-                        Status
-                        <i class="bi @(_primarySortColumn == nameof(ToDoItem.Status) ? (_sortAscending ? "bi-chevron-expand" : "bi-chevron-contract") : "bi-sort-alpha-down")"></i>
-                    </button>
-                </th>
+                <th>Due Date</th>
+                <th>Priority</th>
+                <th>Status</th>
             </tr>
             </thead>
             <tbody>
@@ -81,12 +66,10 @@
 </div>
 
 @code {
-    private string _userId = "1";
     private IEnumerable<ToDoItem> _toDoItems;
     private string _primarySortColumn = nameof(ToDoItem.Priority);
     private string _secondarySortColumn = nameof(ToDoItem.DueDate);
     private bool _sortAscending = true;
-
     private ToDoItemFormModel _formModel = new();
 
     private Task LoadTasks()
@@ -112,37 +95,41 @@
 
     private async Task FetchSortedData()
     {
-        var url = $"ToDoItem/user/{_userId}?primarySortColumn={_primarySortColumn}&secondarySortColumn={_secondarySortColumn}&sortAscending={_sortAscending}";
+        var url = $"ToDoItem/user/{_formModel.UserId}?primarySortColumn={_primarySortColumn}&secondarySortColumn={_secondarySortColumn}&sortAscending={_sortAscending}";
         var response = await Http.GetAsync(url);
         _toDoItems = await response.Content.ReadFromJsonAsync<IEnumerable<ToDoItem>>();
     }
 
     private async Task HandleCreate()
     {
-        var newToDoItem = new ToDoItem
-        {
-            Title = _formModel.Title,
-            Description = _formModel.Description,
-            DueDate = _formModel.DueDate,
-            Priority = _formModel.Priority,
-            Status = _formModel.Status
-        };
-
+        var newToDoItem = _formModel.ToToDoItem();
         var response = await Http.PostAsJsonAsync("ToDoItem", newToDoItem);
         if (response.IsSuccessStatusCode)
         {
-            _formModel = new ToDoItemFormModel();
             await LoadTasks();
         }
     }
 
     private class ToDoItemFormModel
     {
+        public string UserId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public DateTime DueDate { get; set; } = DateTime.Now;
-        public Priority Priority { get; set; } = Priority.Low;
+        public Priority Priority { get; set; }
         public Status Status { get; set; } = Status.NotStarted;
+
+        public ToDoItem ToToDoItem() => new ToDoItem
+        {
+            Title = Title,
+            Description = Description,
+            DueDate = DueDate,
+            Priority = Priority,
+            Status = Status
+        } with
+        {
+            UserId = int.Parse(UserId)
+            };
     }
 
 }
