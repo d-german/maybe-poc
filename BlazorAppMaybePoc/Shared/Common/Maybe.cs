@@ -101,23 +101,21 @@ public static class MaybeExtensions
         }
     }
 
-    public static Maybe<TToType> Bind<TFromType, TToType>(this Maybe<TFromType> @this, Func<TFromType, TToType> f)
+    public static Maybe<TOut> Bind<TIn, TOut>(this Maybe<TIn> maybe, Func<TIn, TOut> func)
     {
-        switch (@this)
+        try
         {
-            case Something<TFromType> sth when !EqualityComparer<TFromType>.Default.Equals(sth.Value, default):
-                try
-                {
-                    return f(sth).ToMaybe();
-                }
-                catch (Exception e)
-                {
-                    return new Error<TToType>(e);
-                }
-            case Error<TFromType> err:
-                return new Error<TToType>(err.ErrorMessage);
-            default:
-                return new Nothing<TToType>();
+            return maybe switch
+            {
+                Something<TIn> s => new Something<TOut>(func(s.Value)),
+                Nothing<TIn> _ => new Nothing<TOut>(),
+                Error<TIn> e => new Error<TOut>(e.ErrorMessage),
+                _ => new Error<TOut>(new Exception("Unhandled case in Maybe bind"))
+            };
+        }
+        catch (Exception e)
+        {
+            return new Error<TOut>(e);
         }
     }
 
@@ -142,45 +140,39 @@ public static class MaybeExtensions
         }
     }
 
-    public static async Task<Maybe<TToType>> BindAsync<TFromType, TToType>(this Maybe<TFromType> @this, Func<TFromType, Task<TToType>> f)
+    public static async Task<Maybe<TOut>> BindAsync<TIn, TOut>(this Maybe<TIn> maybe, Func<TIn, Task<TOut>> func)
     {
-        switch (@this)
+        try
         {
-            case Something<TFromType> sth when !EqualityComparer<TFromType>.Default.Equals(sth.Value, default):
-                try
-                {
-                    var result = await f(sth.Value);
-                    return result.ToMaybe();
-                }
-                catch (Exception e)
-                {
-                    return new Error<TToType>(e);
-                }
-            case Error<TFromType> err:
-                return new Error<TToType>(err.ErrorMessage);
-            default:
-                return new Nothing<TToType>();
+            return maybe switch
+            {
+                Something<TIn> s => new Something<TOut>(await func(s.Value)),
+                Nothing<TIn> _ => new Nothing<TOut>(),
+                Error<TIn> e => new Error<TOut>(e.ErrorMessage),
+                _ => new Error<TOut>(new Exception("Unhandled case in Maybe bind async"))
+            };
+        }
+        catch (Exception e)
+        {
+            return new Error<TOut>(e);
         }
     }
 
-    public static async Task<Maybe<TToType>> BindAsync<TFromType, TToType>(this Maybe<TFromType> @this, Func<TFromType, ValueTask<TToType>> f)
+    public static async Task<Maybe<TOut>> BindAsync<TIn, TOut>(this Maybe<TIn> maybe, Func<TIn, ValueTask<TOut>> func)
     {
-        switch (@this)
+        try
         {
-            case Something<TFromType> sth when !EqualityComparer<TFromType>.Default.Equals(sth.Value, default):
-                try
-                {
-                    var result = await f(sth.Value);
-                    return result.ToMaybe();
-                }
-                catch (Exception e)
-                {
-                    return new Error<TToType>(e);
-                }
-            case Error<TFromType> err:
-                return new Error<TToType>(err.ErrorMessage);
-            default:
-                return new Nothing<TToType>();
+            return maybe switch
+            {
+                Something<TIn> s => new Something<TOut>(await func(s.Value)),
+                Nothing<TIn> _ => new Nothing<TOut>(),
+                Error<TIn> e => new Error<TOut>(e.ErrorMessage),
+                _ => new Error<TOut>(new Exception("Unhandled case in Maybe bind async"))
+            };
+        }
+        catch (Exception e)
+        {
+            return new Error<TOut>(e);
         }
     }
 

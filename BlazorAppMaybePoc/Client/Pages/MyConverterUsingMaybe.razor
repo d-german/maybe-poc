@@ -1,4 +1,5 @@
 @page "/MyConverterMaybe"
+@using BlazorAppMaybePoc.Shared.Common
 
 <h3>Temperature Converter Using Maybe()</h3>
 
@@ -11,21 +12,31 @@
     <button @onclick="ConvertTemperature">Convert</button>
 </div>
 
-
-<p>Result: @_result</p>
+@if (_result is not null)
+{
+    <p>Result: @_result</p>
+}
 
 @code {
     private decimal _inputValue;
     private string _conversionType = "FtoC";
-    private string _result = null!;
+    private string? _result;
 
     private void ConvertTemperature()
     {
-        _result = _conversionType switch
+        var conversionResult = _conversionType switch
         {
-            "FtoC" => TemperatureConversionServiceMap.FahrenheitToCelsius(_inputValue),
-            "CtoF" => TemperatureConversionServiceMap.CelsiusToFahrenheit(_inputValue),
-            _ => "Invalid conversion type"
+            "FtoC" => TemperatureConversionServiceMaybe.FahrenheitToCelsius(_inputValue),
+            "CtoF" => TemperatureConversionServiceMaybe.CelsiusToFahrenheit(_inputValue),
+            _ => new Error<string>(new InvalidOperationException("Invalid conversion type"))
+        };
+
+        _result = conversionResult switch
+        {
+            Nothing<string> _ => "No result could be calculated.",
+            Something<string> s => s.Value,
+            Error<string> e => $"An error occurred: {e.ErrorMessage.Message}",
+            _ => "An unknown error occurred"
         };
     }
 
