@@ -31,6 +31,5 @@ public static class FunctionalExtensions
         return currentThis;
     }
 
-    public static TOut Map<TIn, TOut>(this TIn @this, Func<TIn, TOut> f) =>
-        f(@this);
+    public static TOut Map<TIn, TOut>(this TIn @this, Func<TIn, TOut> f) => f(@this);
 }
