@@ -1,33 +1,30 @@
 @page "/MyConverter"
-@inject TemperatureConversionService ConversionService
 
 <h3>Temperature Converter</h3>
 
 <div>
-    <input type="number" @bind="inputValue" placeholder="Enter value"/>
-    <select @bind="conversionType">
+    <input type="number" @bind="_inputValue" placeholder="Enter value"/>
+    <select @bind="_conversionType">
         <option value="FtoC">Fahrenheit to Celsius</option>
         <option value="CtoF">Celsius to Fahrenheit</option>
     </select>
     <button @onclick="ConvertTemperature">Convert</button>
 </div>
 
-@if (result != null)
-{
-    <p>Result: @result</p>
-}
+
+<p>Result: @_result</p>
 
 @code {
-    private decimal inputValue;
-    private string conversionType = "FtoC";
-    private string result;
+    private decimal _inputValue;
+    private string _conversionType = "FtoC";
+    private string _result = null!;
 
     private void ConvertTemperature()
     {
-        result = conversionType switch
+        _result = _conversionType switch
         {
-            "FtoC" => $"{ConversionService.FahrenheitToCelsius(inputValue)} °C",
-            "CtoF" => $"{ConversionService.CelsiusToFahrenheit(inputValue)} °F",
+            "FtoC" => TemperatureConversionService.FahrenheitToCelsius(_inputValue),
+            "CtoF" => TemperatureConversionService.CelsiusToFahrenheit(_inputValue),
             _ => "Invalid conversion type"
         };
     }

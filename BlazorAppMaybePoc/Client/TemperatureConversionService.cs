@@ -1,14 +1,24 @@
+using BlazorAppMaybePoc.Shared.Common;
+
 namespace BlazorAppMaybePoc.Client;
 
 public class TemperatureConversionService
 {
-    public decimal FahrenheitToCelsius(decimal fahrenheit)
+    public static string FahrenheitToCelsius(decimal fahrenheit)
     {
-        return Math.Round((fahrenheit - 32) * 5 / 9, 2);
+        return fahrenheit.Map(x => x - 32)
+            .Map(x => x * 5)
+            .Map(x => x / 9)
+            .Map(x => Math.Round(x, 2))
+            .Map(x => x + "°C");
     }
 
-    public decimal CelsiusToFahrenheit(decimal celsius)
+    public static string CelsiusToFahrenheit(decimal celsius)
     {
-        return Math.Round(celsius * 9 / 5 + 32, 2);
+        return celsius.Map(x => x * 9)
+            .Map(x => x / 5)
+            .Map(x => x + 32)
+            .Map(x => Math.Round(x, 2))
+            .Map(x => x + "°F");
     }
 }
