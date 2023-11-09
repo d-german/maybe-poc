@@ -2,7 +2,7 @@ using BlazorAppMaybePoc.Shared.Common;
 
 namespace BlazorAppMaybePoc.Client;
 
-public class TemperatureConversionService
+public static class TemperatureConversionServiceMap
 {
     public static string FahrenheitToCelsius(decimal fahrenheit)
     {
