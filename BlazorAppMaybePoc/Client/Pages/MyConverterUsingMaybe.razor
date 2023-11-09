@@ -22,12 +22,12 @@
     private string _conversionType = "FtoC";
     private string? _result;
 
-    private void ConvertTemperature()
+    private async void ConvertTemperature()
     {
         var conversionResult = _conversionType switch
         {
             "FtoC" => TemperatureConversionServiceMaybe.FahrenheitToCelsius(_inputValue),
-            "CtoF" => TemperatureConversionServiceMaybe.CelsiusToFahrenheit(_inputValue),
+            "CtoF" => await TemperatureConversionServiceMaybe.CelsiusToFahrenheitAsync(_inputValue),
             _ => new Error<string>(new InvalidOperationException("Invalid conversion type"))
         };
 
