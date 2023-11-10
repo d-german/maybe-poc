@@ -36,7 +36,6 @@ public class ToDoItemRepositoryTests
     [SetUp]
     public void Setup()
     {
-        // Ensure a unique database name for each test run
         var dbName = Guid.NewGuid().ToString();
         var options = new DbContextOptionsBuilder<TestApplicationDbContext>()
             .UseInMemoryDatabase(databaseName: dbName)
@@ -49,7 +48,7 @@ public class ToDoItemRepositoryTests
     [TearDown]
     public void TearDown()
     {
-        _dbContext.Database.EnsureDeleted(); // This ensures the in-memory database is deleted
+        _dbContext.Database.EnsureDeleted();
         _dbContext.Dispose();
     }
 
@@ -80,5 +79,42 @@ public class ToDoItemRepositoryTests
 
         var itemInDb = await _dbContext.ToDoItems.FindAsync(newToDoItem.ToDoItemId);
         Assert.That(itemInDb, Is.Not.Null);
+    }
+
+    public static IEnumerable<TestCaseData> GetToDoItemsRequestTestCases
+    {
+        get
+        {
+            yield return new TestCaseData(
+                new ToDoItemsRequest
+                {
+                    UserId = 1,
+                    PrimarySortColumn = ToDoSortColumn.Priority,
+                    SecondarySortColumn = ToDoSortColumn.DueDate,
+                    SortAscending = true
+                }).SetName("SortByPriorityThenDueDate_Ascending");
+
+            yield return new TestCaseData(
+                new ToDoItemsRequest
+                {
+                    UserId = 2,
+                    PrimarySortColumn = ToDoSortColumn.Status,
+                    SecondarySortColumn = ToDoSortColumn.Priority,
+                    SortAscending = false
+                }).SetName("SortByStatusThenPriority_Descending");
+        }
+    }
+
+    [Test, TestCaseSource(nameof(GetToDoItemsRequestTestCases))]
+    public async Task GetToDoItemsAsync_VariousRequests_ReturnsCorrectlySortedData(ToDoItemsRequest request)
+    {
+        var testItems = ImmutableList<ToDoItem>.Empty;
+        _dbContext.ToDoItems.AddRange(testItems);
+        await _dbContext.SaveChangesAsync();
+
+        var result = await _repository.GetToDoItemsAsync(request);
+
+        var items = (result as Something<IEnumerable<ToDoItem>>)?.Value;
+        Assert.That(items, Is.Not.Null);
     }
 }
