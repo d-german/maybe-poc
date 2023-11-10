@@ -86,6 +86,8 @@ public partial class UserTasks : ComponentBase
         public Priority Priority { get; set; } = Priority.Medium;
         public DateTime DueDate { get; set; } = DateTime.Today;
 
+        public bool IsValid => !string.IsNullOrWhiteSpace(Title) && !string.IsNullOrWhiteSpace(Description);
+
         public ToDoItem ToToDoItem() => new ToDoItem
             {
                 Title = Title,
