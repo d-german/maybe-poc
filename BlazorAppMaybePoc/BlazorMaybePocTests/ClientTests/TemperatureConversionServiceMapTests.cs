@@ -1,6 +1,6 @@
 using BlazorAppMaybePoc.Client;
 
-namespace BlazorMaybePocTests;
+namespace BlazorMaybePocTests.ClientTests;
 
 [TestFixture]
 public class TemperatureConversionServiceMapTests

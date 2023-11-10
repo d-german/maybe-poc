@@ -2,7 +2,7 @@ using BlazorAppMaybePoc.Client;
 using BlazorAppMaybePoc.Shared.Common;
 using static BlazorAppMaybePoc.Client.TemperatureConversionServiceMaybe;
 
-namespace BlazorMaybePocTests;
+namespace BlazorMaybePocTests.ClientTests;
 
 [TestFixture]
 public class TemperatureConversionServiceMaybeTests

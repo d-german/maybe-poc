@@ -1,7 +1,7 @@
 using System.Net;
 using BlazorAppMaybePoc.Client.Pages;
 
-namespace BlazorMaybePocTests;
+namespace BlazorMaybePocTests.ClientTests;
 
 public class UserTasksTests
 {
