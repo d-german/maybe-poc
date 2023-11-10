@@ -5,39 +5,39 @@
     <h1>User Tasks</h1>
     <div class="mb-3">
         <label for="userId" class="form-label">User ID:</label>
-        <input id="userId" @bind="_viewModel.UserId" type="text" class="form-control" style="width:auto; display:inline-block;"/>
+        <input id="userId" @bind="ViewModel.UserId" type="text" class="form-control" style="width:auto; display:inline-block;"/>
         <button @onclick="LoadTasksAsync" class="btn btn-primary">Load Tasks</button>
     </div>
 
     <div class="mt-4">
         <h2>Add New Task</h2>
-        <EditForm Model="@_viewModel" OnValidSubmit="@CreateAsync">
+        <EditForm Model="@ViewModel" OnValidSubmit="@CreateAsync">
             <div class="form-group">
                 <label for="title">Title:</label>
-                <InputText id="title" class="form-control" @bind-Value="_viewModel.Title"/>
+                <InputText id="title" class="form-control" @bind-Value="ViewModel.Title"/>
             </div>
             <div class="form-group">
                 <label for="description">Description:</label>
-                <InputTextArea id="description" class="form-control" @bind-Value="_viewModel.Description"/>
+                <InputTextArea id="description" class="form-control" @bind-Value="ViewModel.Description"/>
             </div>
             <div class="form-group">
                 <label for="dueDate">Due Date:</label>
-                <InputDate id="dueDate" class="form-control" @bind-Value="_viewModel.DueDate"/>
+                <InputDate id="dueDate" class="form-control" @bind-Value="ViewModel.DueDate"/>
             </div>
             <div class="form-group">
                 <label for="status">Status:</label>
-                <InputSelect id="status" class="form-control" @bind-Value="_viewModel.Status">
+                <InputSelect id="status" class="form-control" @bind-Value="ViewModel.Status">
                     <option value="@Status.NotStarted">Not Started</option>
                     <option value="@Status.InProgress">In Progress</option>
                     <option value="@Status.Completed">Completed</option>
                 </InputSelect>
             </div>
-            <button type="submit" class="btn btn-success" disabled="@(!_viewModel.IsValid)">Add Task</button>
+            <button type="submit" class="btn btn-success" disabled="@(!ViewModel.IsValid)">Add Task</button>
 
         </EditForm>
     </div>
 
-    @if (_toDoItems is not null)
+    @if (ToDoItems is not null)
     {
         <table class="table table-striped">
             <thead>
@@ -65,7 +65,7 @@
             </tr>
             </thead>
             <tbody>
-            @foreach (var item in _toDoItems)
+            @foreach (var item in ToDoItems)
             {
                 <tr>
                     <td>@item.Title</td>

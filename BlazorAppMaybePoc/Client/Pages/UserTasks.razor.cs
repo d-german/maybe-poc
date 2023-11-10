@@ -7,24 +7,24 @@ namespace BlazorAppMaybePoc.Client.Pages;
 // ReSharper disable once ClassNeverInstantiated.Global
 public partial class UserTasks : ComponentBase
 {
-    private IEnumerable<ToDoItem> _toDoItems = null!;
-    private string _primarySortColumn = nameof(ToDoItem.Priority);
-    private string _secondarySortColumn = nameof(ToDoItem.DueDate);
-    private bool _sortAscending = true;
-    private readonly ToDoItemViewModel _viewModel = new();
+    public IEnumerable<ToDoItem> ToDoItems { get; private set; } = null!;
+    public string PrimarySortColumn { get; private set; } = nameof(ToDoItem.Priority);
+    public string SecondarySortColumn { get; private set; } = nameof(ToDoItem.DueDate);
+    public bool SortAscending { get; private set; } = true;
+    public ToDoItemViewModel ViewModel { get; } = new();
 
     private string _currentSortColumn = null!;
     private bool _currentSortAscending;
 
     [Inject]
-    HttpClient Http { get; init; }
+    public HttpClient Http { get; init; }
 
-    private Task LoadTasksAsync()
+    public Task LoadTasksAsync()
     {
-        return SortTasksAsync(_primarySortColumn);
+        return SortTasksAsync(PrimarySortColumn);
     }
 
-    private Task SortTasksAsync(string column)
+    public async Task SortTasksAsync(string column)
     {
         if (_currentSortColumn == column)
         {
@@ -36,30 +36,30 @@ public partial class UserTasks : ComponentBase
             _currentSortAscending = true;
         }
 
-        if (_primarySortColumn == column)
+        if (PrimarySortColumn == column)
         {
-            _sortAscending = !_sortAscending;
+            SortAscending = !SortAscending;
         }
         else
         {
-            _secondarySortColumn = _primarySortColumn;
-            _primarySortColumn = column;
-            _sortAscending = true;
+            SecondarySortColumn = PrimarySortColumn;
+            PrimarySortColumn = column;
+            SortAscending = true;
         }
 
-        return FetchDataAsync();
+        await FetchDataAsync();
     }
 
-    private async Task FetchDataAsync()
+    public async Task FetchDataAsync()
     {
-        var url = $"ToDoItem/user/{_viewModel.UserId}?primarySortColumn={_primarySortColumn}&secondarySortColumn={_secondarySortColumn}&sortAscending={_sortAscending}";
+        var url = $"ToDoItem/user/{ViewModel.UserId}?primarySortColumn={PrimarySortColumn}&secondarySortColumn={SecondarySortColumn}&sortAscending={SortAscending}";
         var response = await Http.GetAsync(url);
-        _toDoItems = (await response.Content.ReadFromJsonAsync<IEnumerable<ToDoItem>>())!;
+        ToDoItems = (await response.Content.ReadFromJsonAsync<IEnumerable<ToDoItem>>())!;
     }
 
-    private async Task CreateAsync()
+    public async Task CreateAsync()
     {
-        var newToDoItem = _viewModel.ToToDoItem();
+        var newToDoItem = ViewModel.ToToDoItem();
         var response = await Http.PostAsJsonAsync("ToDoItem", newToDoItem);
         if (response.IsSuccessStatusCode)
         {
@@ -67,7 +67,7 @@ public partial class UserTasks : ComponentBase
         }
     }
 
-    private string GetSortIconClass(string columnName)
+    public string GetSortIconClass(string columnName)
     {
         if (_currentSortColumn != columnName)
         {
@@ -75,29 +75,5 @@ public partial class UserTasks : ComponentBase
         }
 
         return _currentSortAscending ? "oi oi-arrow-thick-bottom" : "oi oi-arrow-thick-top";
-    }
-
-    private class ToDoItemViewModel
-    {
-        public string UserId { get; set; } = "1";
-        public string Title { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public Status Status { get; set; } = Status.NotStarted;
-        public Priority Priority { get; set; } = Priority.Medium;
-        public DateTime DueDate { get; set; } = DateTime.Today;
-
-        public bool IsValid => !string.IsNullOrWhiteSpace(Title) && !string.IsNullOrWhiteSpace(Description);
-
-        public ToDoItem ToToDoItem() => new ToDoItem
-            {
-                Title = Title,
-                Description = Description,
-                DueDate = DueDate,
-                Priority = Priority,
-                Status = Status
-            } with
-            {
-                UserId = int.Parse(UserId)
-            };
     }
 }
