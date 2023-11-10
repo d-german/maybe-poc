@@ -1,6 +1,6 @@
 using BlazorAppMaybePoc.Server.Data;
 using BlazorAppMaybePoc.Shared;
-using BlazorAppMaybePoc.Shared.Common;
+using BlazorAppMaybePoc.Shared.Functional;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlazorAppMaybePoc.Server.Repositories;

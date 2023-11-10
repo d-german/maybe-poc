@@ -1,4 +1,4 @@
-﻿namespace BlazorAppMaybePoc.Shared.Common;
+﻿namespace BlazorAppMaybePoc.Shared.Functional;
 
 public abstract class Operation
 {

@@ -1,5 +1,5 @@
 using BlazorAppMaybePoc.Shared;
-using BlazorAppMaybePoc.Shared.Common;
+using BlazorAppMaybePoc.Shared.Functional;
 
 namespace BlazorAppMaybePoc.Server.Repositories;
 

@@ -1,4 +1,4 @@
-using BlazorAppMaybePoc.Shared.Common;
+using BlazorAppMaybePoc.Shared.Functional;
 
 namespace BlazorAppMaybePoc.Client;
 

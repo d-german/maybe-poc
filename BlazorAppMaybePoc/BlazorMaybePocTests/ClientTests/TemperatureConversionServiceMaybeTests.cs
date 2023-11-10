@@ -1,5 +1,5 @@
 using BlazorAppMaybePoc.Client;
-using BlazorAppMaybePoc.Shared.Common;
+using BlazorAppMaybePoc.Shared.Functional;
 using static BlazorAppMaybePoc.Client.TemperatureConversionServiceMaybe;
 
 namespace BlazorMaybePocTests.ClientTests;

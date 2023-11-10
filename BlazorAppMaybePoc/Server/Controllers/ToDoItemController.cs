@@ -1,6 +1,6 @@
 using BlazorAppMaybePoc.Server.Repositories;
 using BlazorAppMaybePoc.Shared;
-using BlazorAppMaybePoc.Shared.Common;
+using BlazorAppMaybePoc.Shared.Functional;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlazorAppMaybePoc.Server.Controllers;
