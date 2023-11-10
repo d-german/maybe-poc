@@ -2,9 +2,9 @@ using BlazorAppMaybePoc.Shared.Common;
 
 namespace BlazorAppMaybePoc.Client;
 
-public class MagicValueException : Exception
+public class UniverseAnswerTemperatureException : Exception
 {
-    public MagicValueException()
+    public UniverseAnswerTemperatureException()
         : base("The temperature is the answer to life, the universe, and everything.")
     {
     }
@@ -30,11 +30,14 @@ public static class TemperatureConversionServiceMaybe
             .Bind(x => x * 5)
             .Bind(x => x / 9)
             .Bind(RoundBy2)
-            .Bind(x => $"{x}°C");
+            .Bind(x => $"{x}°C")
+            .OnSomething(Console.WriteLine) // This is a side effect demonstrating the use of logging in a Maybe pipeline
+            .OnNothing(() => Console.WriteLine("Nothing"))
+            .OnError(e => Console.WriteLine(e.Message));
 
         Func<decimal, decimal> DetectUniverseAnswer()
         {
-            return x => x == 42 ? throw new MagicValueException() : x;
+            return x => x == 42 ? throw new UniverseAnswerTemperatureException() : x;
         }
     }
 
