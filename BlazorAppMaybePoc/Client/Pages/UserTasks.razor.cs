@@ -11,7 +11,7 @@ public partial class UserTasks : ComponentBase
     private string _primarySortColumn = nameof(ToDoItem.Priority);
     private string _secondarySortColumn = nameof(ToDoItem.DueDate);
     private bool _sortAscending = true;
-    private readonly ToDoItemFormModel _formModel = new();
+    private readonly ToDoItemViewModel _viewModel = new();
 
     private string _currentSortColumn = null!;
     private bool _currentSortAscending;
@@ -52,14 +52,14 @@ public partial class UserTasks : ComponentBase
 
     private async Task FetchSortedData()
     {
-        var url = $"ToDoItem/user/{_formModel.UserId}?primarySortColumn={_primarySortColumn}&secondarySortColumn={_secondarySortColumn}&sortAscending={_sortAscending}";
+        var url = $"ToDoItem/user/{_viewModel.UserId}?primarySortColumn={_primarySortColumn}&secondarySortColumn={_secondarySortColumn}&sortAscending={_sortAscending}";
         var response = await Http.GetAsync(url);
         _toDoItems = (await response.Content.ReadFromJsonAsync<IEnumerable<ToDoItem>>())!;
     }
 
     private async Task HandleCreate()
     {
-        var newToDoItem = _formModel.ToToDoItem();
+        var newToDoItem = _viewModel.ToToDoItem();
         var response = await Http.PostAsJsonAsync("ToDoItem", newToDoItem);
         if (response.IsSuccessStatusCode)
         {
@@ -77,7 +77,7 @@ public partial class UserTasks : ComponentBase
         return _currentSortAscending ? "oi oi-arrow-thick-bottom" : "oi oi-arrow-thick-top";
     }
 
-    private class ToDoItemFormModel
+    private class ToDoItemViewModel
     {
         public string UserId { get; set; }
         public string Title { get; set; }
