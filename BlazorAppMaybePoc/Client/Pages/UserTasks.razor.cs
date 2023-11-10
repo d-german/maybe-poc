@@ -19,12 +19,12 @@ public partial class UserTasks : ComponentBase
     [Inject]
     HttpClient Http { get; init; }
 
-    private Task LoadTasks()
+    private Task LoadTasksAsync()
     {
-        return SortTasks(_primarySortColumn);
+        return SortTasksAsync(_primarySortColumn);
     }
 
-    private Task SortTasks(string column)
+    private Task SortTasksAsync(string column)
     {
         if (_currentSortColumn == column)
         {
@@ -47,23 +47,23 @@ public partial class UserTasks : ComponentBase
             _sortAscending = true;
         }
 
-        return FetchSortedData();
+        return FetchDataAsync();
     }
 
-    private async Task FetchSortedData()
+    private async Task FetchDataAsync()
     {
         var url = $"ToDoItem/user/{_viewModel.UserId}?primarySortColumn={_primarySortColumn}&secondarySortColumn={_secondarySortColumn}&sortAscending={_sortAscending}";
         var response = await Http.GetAsync(url);
         _toDoItems = (await response.Content.ReadFromJsonAsync<IEnumerable<ToDoItem>>())!;
     }
 
-    private async Task HandleCreate()
+    private async Task CreateAsync()
     {
         var newToDoItem = _viewModel.ToToDoItem();
         var response = await Http.PostAsJsonAsync("ToDoItem", newToDoItem);
         if (response.IsSuccessStatusCode)
         {
-            await LoadTasks();
+            await LoadTasksAsync();
         }
     }
 

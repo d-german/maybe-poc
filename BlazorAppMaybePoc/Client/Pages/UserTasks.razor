@@ -6,12 +6,12 @@
     <div class="mb-3">
         <label for="userId" class="form-label">User ID:</label>
         <input id="userId" @bind="_viewModel.UserId" type="text" class="form-control" style="width:auto; display:inline-block;"/>
-        <button @onclick="LoadTasks" class="btn btn-primary">Load Tasks</button>
+        <button @onclick="LoadTasksAsync" class="btn btn-primary">Load Tasks</button>
     </div>
 
     <div class="mt-4">
         <h2>Add New Task</h2>
-        <EditForm Model="@_viewModel" OnValidSubmit="@HandleCreate">
+        <EditForm Model="@_viewModel" OnValidSubmit="@CreateAsync">
             <div class="form-group">
                 <label for="title">Title:</label>
                 <InputText id="title" class="form-control" @bind-Value="_viewModel.Title"/>
@@ -46,19 +46,19 @@
                 <th>Description</th>
                 <th>
                     Due Date
-                    <button @onclick="() => SortTasks(nameof(ToDoItem.DueDate))">
+                    <button @onclick="() => SortTasksAsync(nameof(ToDoItem.DueDate))">
                         <span class="@GetSortIconClass(nameof(ToDoItem.DueDate))"></span>
                     </button>
                 </th>
                 <th>
                     Priority
-                    <button @onclick="() => SortTasks(nameof(ToDoItem.Priority))">
+                    <button @onclick="() => SortTasksAsync(nameof(ToDoItem.Priority))">
                         <span class="@GetSortIconClass(nameof(ToDoItem.Priority))"></span>
                     </button>
                 </th>
                 <th>
                     Status
-                    <button @onclick="() => SortTasks(nameof(ToDoItem.Status))">
+                    <button @onclick="() => SortTasksAsync(nameof(ToDoItem.Status))">
                         <span class="@GetSortIconClass(nameof(ToDoItem.Status))"></span>
                     </button>
                 </th>
