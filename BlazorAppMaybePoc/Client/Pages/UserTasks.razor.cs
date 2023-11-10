@@ -7,10 +7,10 @@ namespace BlazorAppMaybePoc.Client.Pages;
 // ReSharper disable once ClassNeverInstantiated.Global
 public partial class UserTasks : ComponentBase
 {
-    public IEnumerable<ToDoItem> ToDoItems { get; private set; } = null!;
-    public string PrimarySortColumn { get; private set; } = nameof(ToDoItem.Priority);
-    public string SecondarySortColumn { get; private set; } = nameof(ToDoItem.DueDate);
-    public bool SortAscending { get; private set; } = true;
+    public IEnumerable<ToDoItem> ToDoItems { get; set; } = null!;
+    public string PrimarySortColumn { get; set; } = nameof(ToDoItem.Priority);
+    public string SecondarySortColumn { get; set; } = nameof(ToDoItem.DueDate);
+    public bool SortAscending { get; set; } = true;
     public ToDoItemViewModel ViewModel { get; } = new();
 
     private string _currentSortColumn = null!;
@@ -24,11 +24,11 @@ public partial class UserTasks : ComponentBase
         return SortTasksAsync(PrimarySortColumn);
     }
 
-    public async Task SortTasksAsync(string column)
+    public virtual Task SortTasksAsync(string column)
     {
         if (_currentSortColumn == column)
         {
-            _currentSortAscending = !_currentSortAscending;
+            _currentSortAscending = !_currentSortAscending; //TODO: Not covered by tests
         }
         else
         {
@@ -38,7 +38,7 @@ public partial class UserTasks : ComponentBase
 
         if (PrimarySortColumn == column)
         {
-            SortAscending = !SortAscending;
+            SortAscending = !SortAscending; //TODO: Not covered by tests
         }
         else
         {
@@ -47,10 +47,10 @@ public partial class UserTasks : ComponentBase
             SortAscending = true;
         }
 
-        await FetchDataAsync();
+        return FetchDataAsync();
     }
 
-    public async Task FetchDataAsync()
+    public virtual async Task FetchDataAsync()
     {
         var url = $"ToDoItem/user/{ViewModel.UserId}?primarySortColumn={PrimarySortColumn}&secondarySortColumn={SecondarySortColumn}&sortAscending={SortAscending}";
         var response = await Http.GetAsync(url);
