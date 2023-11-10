@@ -7,17 +7,17 @@ namespace BlazorAppMaybePoc.Client.Pages;
 // ReSharper disable once ClassNeverInstantiated.Global
 public partial class UserTasks : ComponentBase
 {
-    public IEnumerable<ToDoItem> ToDoItems { get; set; } = null!;
+    private IEnumerable<ToDoItem> ToDoItems { get; set; } = null!;
     public string PrimarySortColumn { get; set; } = nameof(ToDoItem.Priority);
     public string SecondarySortColumn { get; set; } = nameof(ToDoItem.DueDate);
     public bool SortAscending { get; set; } = true;
-    public ToDoItemViewModel ViewModel { get; } = new();
+    public ToDoItemViewModel ViewModel { get; set; } = new();
 
     private string _currentSortColumn = null!;
     private bool _currentSortAscending;
 
     [Inject]
-    public HttpClient Http { get; init; }
+    public HttpClient Http { get; set; } = null!;
 
     public Task LoadTasksAsync()
     {
@@ -28,7 +28,7 @@ public partial class UserTasks : ComponentBase
     {
         if (_currentSortColumn == column)
         {
-            _currentSortAscending = !_currentSortAscending; //TODO: Not covered by tests
+            _currentSortAscending = !_currentSortAscending;
         }
         else
         {
@@ -38,7 +38,7 @@ public partial class UserTasks : ComponentBase
 
         if (PrimarySortColumn == column)
         {
-            SortAscending = !SortAscending; //TODO: Not covered by tests
+            SortAscending = !SortAscending;
         }
         else
         {
@@ -50,7 +50,7 @@ public partial class UserTasks : ComponentBase
         return FetchDataAsync();
     }
 
-    public virtual async Task FetchDataAsync()
+    protected virtual async Task FetchDataAsync()
     {
         var url = $"ToDoItem/user/{ViewModel.UserId}?primarySortColumn={PrimarySortColumn}&secondarySortColumn={SecondarySortColumn}&sortAscending={SortAscending}";
         var response = await Http.GetAsync(url);
