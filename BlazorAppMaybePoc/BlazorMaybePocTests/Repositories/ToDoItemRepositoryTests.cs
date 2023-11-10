@@ -16,9 +16,9 @@ public class TestApplicationDbContext : DbContext, IApplicationDbContext
     {
     }
 
-    public async Task<Maybe<DbSet<ToDoItem>>> GetToDoItemsAsync()
+    public Task<Maybe<DbSet<ToDoItem>>> GetToDoItemsAsync()
     {
-        return new Something<DbSet<ToDoItem>>(ToDoItems);
+        return Task.FromResult<Maybe<DbSet<ToDoItem>>>(new Something<DbSet<ToDoItem>>(ToDoItems));
     }
 
     public async Task<Maybe<int>> PersistChangesAsync(CancellationToken cancellationToken = default)
@@ -30,8 +30,8 @@ public class TestApplicationDbContext : DbContext, IApplicationDbContext
 [TestFixture]
 public class ToDoItemRepositoryTests
 {
-    private ToDoItemRepository _repository;
-    private TestApplicationDbContext _dbContext;
+    private ToDoItemRepository _repository = null!;
+    private TestApplicationDbContext _dbContext = null!;
 
     [SetUp]
     public void Setup()
