@@ -52,7 +52,7 @@ public class ToDoItemController : ControllerBase
             Nothing<IEnumerable<ToDoItem>> _ => NotFound("No ToDo items found for the user."),
             Something<IEnumerable<ToDoItem>> s => Ok(s.Value),
             Error<IEnumerable<ToDoItem>> e => StatusCode(500, e.ErrorMessage.Message),
-            _ => StatusCode(500, "An unknown error occurred")
+            _ => StatusCode(500, "An unknown error occurred") // This should never happen 
         };
     }
 }
