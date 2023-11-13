@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BlazorMaybePocTests.Repositories;
 
-public class TestApplicationDbContext : DbContext, IApplicationDbContext
+public class TestApplicationDbContext : DbContext, IApplicationDbContext // not using inheritance here since this "is a" DbContext and "can do" IApplicationDbContext
 {
     public DbSet<ToDoItem> ToDoItems { get; set; } = null!;
 
