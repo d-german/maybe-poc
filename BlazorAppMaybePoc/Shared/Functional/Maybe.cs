@@ -208,8 +208,8 @@ public static class MaybeExtensions
     {
         try
         {
-            if (@this is Something<T> err)
-                act(err.Value);
+            if (@this is Something<T> sth)
+                act(sth.Value);
             return @this;
         }
         catch (Exception e)
