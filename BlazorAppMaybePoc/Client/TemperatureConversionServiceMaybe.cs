@@ -41,10 +41,17 @@ public static class TemperatureConversionServiceMaybe
         }
     }
 
+    public static Maybe<string> CelsiusToFahrenheit(decimal celsius)
+    {
+        return celsius.ToMaybe()
+            .Bind(x => x * 9 / 5 + 32)
+            .Bind(RoundBy2)
+            .Bind(x => $"{x}°F");
+    }
+
     public static async Task<Maybe<string>> CelsiusToFahrenheitAsync(decimal celsius)
     {
-        return (await celsius.ToMaybe()
-                .Bind(x => (x * 9 / 5 + 32))
+        return (await celsius.ToMaybe().Bind(x => (x * 9 / 5 + 32))
                 .BindAsync(RoundBy2Async))
             .Bind(x => $"{x}°F");
     }
