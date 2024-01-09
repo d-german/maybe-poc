@@ -1,11 +1,11 @@
 using BlazorAppMaybePoc.Client;
 using BlazorAppMaybePoc.Shared.Functional;
-using static BlazorAppMaybePoc.Client.TemperatureConversionServiceMaybe;
+using static BlazorAppMaybePoc.Client.TemperatureConversionServiceMonad;
 
 namespace BlazorMaybePocTests.ClientTests;
 
 [TestFixture]
-public class TemperatureConversionServiceMaybeTests
+public class TemperatureConversionServiceMonadTests
 {
     [TestCase(32, "0°C")]
     [TestCase(212, "100°C")]

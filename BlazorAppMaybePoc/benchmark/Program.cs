@@ -8,15 +8,33 @@ namespace benchmark;
 public class MaybeBenchmark
 {
     [Benchmark]
-    public void Maybe()
+    public void NoMonadImplementation()
     {
-        _ = TemperatureConversionServiceMaybe.CelsiusToFahrenheit(100);
+        _ = TemperatureConversionService.CelsiusToFahrenheit(100);
     }
 
     [Benchmark]
-    public void NoMaybe()
+    public void MaybeHeapAllocWithDelegate()
     {
-        _ = TemperatureConversionService.CelsiusToFahrenheit(100);
+        _ = TemperatureConversionServiceMonad.CelsiusToFahrenheitWithDelegateMaybe(100);
+    }
+
+    [Benchmark]
+    public void MaybeStackAllocWithLambda()
+    {
+        _ = TemperatureConversionServiceMonad.CelsiusToFahrenheitWithoutDelegateMaybe(100);
+    }
+
+    [Benchmark]
+    public void ResultHeapAllocWithDelegate()
+    {
+        _ = TemperatureConversionServiceMonad.CelsiusToFahrenheitWithDelegateResult(100);
+    }
+
+    [Benchmark]
+    public void ResultStackAllocWithLambda()
+    {
+        _ = TemperatureConversionServiceMonad.CelsiusToFahrenheitWithoutDelegateResult(100);
     }
 }
 

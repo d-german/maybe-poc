@@ -1,4 +1,6 @@
 using BlazorAppMaybePoc.Shared.Functional;
+using DotNext;
+using DotNext.Runtime.CompilerServices;
 
 namespace BlazorAppMaybePoc.Client;
 
@@ -10,7 +12,13 @@ public class UniverseAnswerTemperatureException : Exception
     }
 }
 
-public static class TemperatureConversionServiceMaybe
+public struct RoundBy2Supplier : ISupplier<decimal, decimal>
+{
+    public decimal Invoke(decimal arg) => Math.Round(arg, 2);
+    Func<decimal, decimal> IFunctional<Func<decimal, decimal>>.ToDelegate() => Invoke;
+}
+
+public static class TemperatureConversionServiceMonad
 {
     private static decimal RoundBy2(decimal x)
     {
@@ -31,7 +39,7 @@ public static class TemperatureConversionServiceMaybe
             .Bind(x => x / 9)
             .Bind(RoundBy2)
             .Bind(x => $"{x}°C")
-            .OnSomething(Console.WriteLine) // This is a side effect demonstrating the use of logging in a Maybe pipeline
+            .OnSomething(Console.WriteLine)
             .OnNothing(() => Console.WriteLine("Nothing"))
             .OnError(e => Console.WriteLine(e.Message));
 
@@ -41,12 +49,36 @@ public static class TemperatureConversionServiceMaybe
         }
     }
 
-    public static Maybe<string> CelsiusToFahrenheit(decimal celsius)
+    public static Maybe<string> CelsiusToFahrenheitWithDelegateMaybe(decimal celsius)
     {
         return celsius.ToMaybe()
             .Bind(x => x * 9 / 5 + 32)
             .Bind(RoundBy2)
             .Bind(x => $"{x}°F");
+    }
+
+    public static Maybe<string> CelsiusToFahrenheitWithoutDelegateMaybe(decimal celsius)
+    {
+        return celsius.ToMaybe()
+            .Bind(x => x * 9 / 5 + 32)
+            .Bind(x => Math.Round(x, 2))
+            .Bind(x => $"{x}°F");
+    }
+
+    public static Result<string> CelsiusToFahrenheitWithDelegateResult(decimal celsius)
+    {
+        return Result.FromValue(celsius)
+            .Convert(x => x * 9 / 5 + 32)
+            .Convert(RoundBy2)
+            .Convert(x => $"{x}°F");
+    }
+
+    public static Result<string> CelsiusToFahrenheitWithoutDelegateResult(decimal celsius)
+    {
+        return Result.FromValue(celsius)
+            .Convert(x => x * 9 / 5 + 32)
+            .Convert(x => Math.Round(x, 2))
+            .Convert(x => $"{x}°F");
     }
 
     public static async Task<Maybe<string>> CelsiusToFahrenheitAsync(decimal celsius)
