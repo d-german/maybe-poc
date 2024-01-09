@@ -47,11 +47,11 @@ static class Program
 }
 
 /*
-|  Method |     Mean |   Error |  StdDev |  Gen 0 | Gen 1 | Gen 2 | Allocated |
-|-------- |---------:|--------:|--------:|-------:|------:|------:|----------:|
-|   Maybe | 160.3 ns | 0.93 ns | 0.78 ns | 0.0165 |     - |     - |     216 B |
-| NoMaybe | 101.9 ns | 0.16 ns | 0.13 ns | 0.0024 |     - |     - |      32 B |
-
-The difference of 60 nanoseconds is equivalent to 0.00006 milliseconds (or 60 microseconds).
-
+|                              Method |      Mean |    Error |   StdDev |  Gen 0 | Gen 1 | Gen 2 | Allocated |
+|------------------------------------ |----------:|---------:|---------:|-------:|------:|------:|----------:|
+| DirectCelsiusToFahrenheitConversion |  60.25 ns | 1.142 ns | 1.068 ns | 0.0024 |     - |     - |      32 B |
+|          MaybeHeapAllocWithDelegate | 104.01 ns | 2.069 ns | 2.383 ns | 0.0165 |     - |     - |     216 B |
+|           MaybeStackAllocWithLambda |  96.56 ns | 1.722 ns | 1.611 ns | 0.0116 |     - |     - |     152 B |
+|         ResultHeapAllocWithDelegate | 101.70 ns | 0.888 ns | 0.787 ns | 0.0073 |     - |     - |      96 B |
+|          ResultStackAllocWithLambda |  96.04 ns | 1.795 ns | 2.137 ns | 0.0024 |     - |     - |      32 B |
 */
