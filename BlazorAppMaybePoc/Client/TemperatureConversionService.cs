@@ -8,7 +8,7 @@ public static class TemperatureConversionService
         return $"{Math.Round(celsius, 2)}°C";
     }
 
-    public static string CelsiusToFahrenheit(decimal celsius)
+    public static string DirectCelsiusToFahrenheitConversion(decimal celsius)
     {
         var fahrenheit = celsius * 9 / 5 + 32;
         return $"{Math.Round(fahrenheit, 2)}°F";

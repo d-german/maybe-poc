@@ -8,9 +8,9 @@ namespace benchmark;
 public class MaybeBenchmark
 {
     [Benchmark]
-    public void NoMonadImplementation()
+    public void DirectCelsiusToFahrenheitConversion()
     {
-        _ = TemperatureConversionService.CelsiusToFahrenheit(100);
+        _ = TemperatureConversionService.DirectCelsiusToFahrenheitConversion(100);
     }
 
     [Benchmark]
