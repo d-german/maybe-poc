@@ -1,6 +1,3 @@
-using FullTextSearchValueObject;
-using Microsoft.AspNetCore.Mvc;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -38,22 +35,6 @@ app.MapGet("/weatherforecast", () =>
     })
     .WithName("GetWeatherForecast")
     .WithOpenApi();
-
-app.MapGet("/fulltextsearch", ([FromQuery] SearchQuery query) =>
-    {
-        try
-        {
-            var result = FullTextSearchService.SearchWithQueryParameter(query);
-            return Results.Ok(result);
-        }
-        catch (ArgumentException ex)
-        {
-            return Results.BadRequest(ex.Message);
-        }
-    })
-    .WithName("GetFullTextSearchResults")
-    .WithOpenApi();
-
 
 app.Run();
 

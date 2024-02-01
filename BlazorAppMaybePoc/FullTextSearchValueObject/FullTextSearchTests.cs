@@ -21,7 +21,6 @@ public class FullTextSearchTests
     public void SearchWithImplicitStringConversionReturnsExpectedResult()
     {
         // Implicit conversion from string to SearchQuery
-        // public static implicit operator SearchQuery(string query) => new() { Query = query };
         const string searchQuery = "Suppercalifragilisticexpialidocious";
         var searchResultCount = FullTextSearchService.SearchWithQueryParameter(searchQuery);
         Assert.That(searchResultCount, Is.EqualTo(5));
@@ -35,7 +34,7 @@ public class FullTextSearchTests
     }
 
     [Test]
-    public void Test5()
+    public void CreatingSearchQueryWithShortStringThrowsException()
     {
         const string searchQuery = "su";
         Assert.Throws<ArgumentException>(() => _ = new SearchQuery { Query = searchQuery });

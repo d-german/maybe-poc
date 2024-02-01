@@ -23,9 +23,6 @@ public record SearchQuery
         }
     }
 
-    // Implicit conversion from SearchQuery to string
-    public static implicit operator string(SearchQuery searchQuery) => searchQuery._query;
-
     // Implicit conversion from string to SearchQuery
     public static implicit operator SearchQuery(string query) => new() { Query = query };
 }
