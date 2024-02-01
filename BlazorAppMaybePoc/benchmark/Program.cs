@@ -1,4 +1,5 @@
-﻿using BenchmarkDotNet.Attributes;
+﻿using System.Collections.Immutable;
+using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
 using BlazorAppMaybePoc.Client;
 
@@ -7,39 +8,49 @@ namespace benchmark;
 [MemoryDiagnoser]
 public class MaybeBenchmark
 {
-    [Benchmark]
-    public void DirectCelsiusToFahrenheitConversion()
-    {
-        _ = TemperatureConversionService.DirectCelsiusToFahrenheitConversion(100);
-    }
+    
+    private int[] largeRange;
+    private int _count;
 
-    [Benchmark]
-    public void MaybeHeapAllocWithDelegate()
+    //[GlobalSetup]
+    public void Setup()
     {
-        _ = TemperatureConversionServiceMonad.CelsiusToFahrenheitWithDelegateMaybe(100);
+        largeRange = Enumerable.Range(1, 100000).ToArray();
     }
-
-    [Benchmark]
-    public void MaybeStackAllocWithLambda()
+    
+    //[Benchmark]
+    public void UseCollectionInitializerSyntax()
     {
-        _ = TemperatureConversionServiceMonad.CelsiusToFahrenheitWithoutDelegateMaybe(100);
+        List<int> numbers = new List<int>();
+        for(int i = 0; i < 100000; i++)
+        {
+            numbers.Add(i);
+        }
     }
-
-    [Benchmark]
-    public void ResultHeapAllocWithDelegate()
+    //[Benchmark]
+    public void UseCollectionExpressionCSharp12Syntax()
     {
-        _ = TemperatureConversionServiceMonad.CelsiusToFahrenheitWithDelegateResult(100);
+        List<int> numbers = [..largeRange];
     }
-
+    
     [Benchmark]
-    public void ResultStackAllocWithLambda()
+    public void CreateImmutableListOld()
     {
-        _ = TemperatureConversionServiceMonad.CelsiusToFahrenheitWithoutDelegateResult(100);
+        ImmutableList<int> numbers = ImmutableList.Create<int>(999);
+        _count = numbers.Count +1;
     }
+    
+    [Benchmark]
+    public void CreateImmutableListNew()
+    {
+        ImmutableList<int> numbers = [999];
+    }
+  
 }
 
 static class Program
 {
+    
     static void Main()
     {
         BenchmarkRunner.Run<MaybeBenchmark>();

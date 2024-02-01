@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorMaybePocTests", "Blaz
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "benchmark", "benchmark\benchmark.csproj", "{D4B192C2-6AB5-465B-A59F-11E781815FD9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Required", "Required\Required.csproj", "{F53EB450-D9D6-4134-B783-5E7E64446FBE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FullTextSearchValueObject", "FullTextSearchValueObject\FullTextSearchValueObject.csproj", "{62CFA531-A50E-43CE-AD7F-66296137B496}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{D4B192C2-6AB5-465B-A59F-11E781815FD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4B192C2-6AB5-465B-A59F-11E781815FD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4B192C2-6AB5-465B-A59F-11E781815FD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F53EB450-D9D6-4134-B783-5E7E64446FBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F53EB450-D9D6-4134-B783-5E7E64446FBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F53EB450-D9D6-4134-B783-5E7E64446FBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F53EB450-D9D6-4134-B783-5E7E64446FBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62CFA531-A50E-43CE-AD7F-66296137B496}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62CFA531-A50E-43CE-AD7F-66296137B496}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62CFA531-A50E-43CE-AD7F-66296137B496}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62CFA531-A50E-43CE-AD7F-66296137B496}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
