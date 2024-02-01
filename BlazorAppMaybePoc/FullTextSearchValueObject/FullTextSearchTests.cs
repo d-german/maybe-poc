@@ -27,7 +27,7 @@ public class FullTextSearchTests
     }
 
     [Test]
-    public void Test4()
+    public void SearchWithShortStringQueryThrowsException()
     {
         const string searchQuery = "su";
         Assert.Throws<ArgumentException>(() => _ = FullTextSearchService.SearchWithQueryParameter(searchQuery));
