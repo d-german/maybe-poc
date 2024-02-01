@@ -13,11 +13,19 @@ public record SearchQuery
             {
                 throw new ArgumentException("Query cannot be null or whitespace.", nameof(Query));
             }
+
             if (value.Length < 3)
             {
                 throw new ArgumentException("Query must be at least 3 characters long.", nameof(Query));
             }
+
             _query = value;
         }
     }
+
+    // Implicit conversion from SearchQuery to string
+    public static implicit operator string(SearchQuery searchQuery) => searchQuery._query;
+
+    // Implicit conversion from string to SearchQuery
+    public static implicit operator SearchQuery(string query) => new() { Query = query };
 }

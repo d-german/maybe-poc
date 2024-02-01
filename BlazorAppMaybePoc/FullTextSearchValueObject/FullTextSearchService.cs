@@ -17,7 +17,7 @@ public class FullTextSearchService
         return PerformSearch(query);
     }
 
-    public static int Search(SearchQuery query)
+    public static int SearchWithQueryParameter(SearchQuery query)
     {
         return PerformSearch(query.Query);
     }
